@@ -11,3 +11,8 @@ export default {
   },
 };
 </script>
+<style>
+*{
+  font-family: 'Arial', sans-serif;
+}
+</style>
