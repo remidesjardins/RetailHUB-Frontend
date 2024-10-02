@@ -14,7 +14,7 @@ const routes = [
     {
         path: '/',
         name: 'Sale',
-        component: SaleView,
+        component: SaleStockView,
     },
     {
         path: '/login',

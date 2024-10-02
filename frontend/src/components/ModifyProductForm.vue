@@ -25,9 +25,20 @@
           <input type="number" id="price" v-model="product.price" placeholder="Enter price" required />
         </div>
       </div>
-
+      <!-- Image URL and Slot -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="Image">Image URL</label>
+          <input type="text" id="Image" v-model="product.Image" placeholder="Enter an URL" required />
+        </div>
+        <div class="form-group">
+          <label for="slot">Slot</label>
+          <input type="text" id="Slot" v-model="product.Slot" placeholder="Enter slot" required />
+        </div>
+      </div>
       <!-- Category Checkbox and Add Category -->
-      <div class="form-group">
+      <div class="form-row">
+        <div class="form-group">
         <label for="category">Category</label>
         <div class="category-row">
           <input type="checkbox" id="tech-category" v-model="product.category" value="Tech" />
@@ -35,6 +46,9 @@
           <button type="button" class="add-category-btn">+ Add category</button>
         </div>
       </div>
+
+  </div>
+
 
       <!-- Overview text area -->
       <div class="form-group">
@@ -58,6 +72,8 @@ export default {
         price: '',
         category: 'Tech', // Example default category
         Details: '',
+        Image: '',
+        Slot: '',
       }
     };
   },

@@ -1,9 +1,9 @@
 <template>
-  <Header :searchQuery="searchQuery" @search="handleSearch" />
 
   <div class="home-container">
     <NavBar class="navbar"></NavBar>
     <div class="content">
+      <Header :searchQuery="searchQuery" @search="handleSearch" id="Header"/>
       <div class="scrollable">
         <ProductList
             :productList="filteredProducts"
@@ -133,7 +133,8 @@ export default {
   flex-direction: column; /* Align ProductList and CommandBoxes vertically */
   justify-content: flex-start; /* Align items at the top */
   align-items: flex-start;
-  gap: 20px; /* Add some space between ProductList and CommandBoxes */
+  gap: 20px;
 }
+
 
 </style>s

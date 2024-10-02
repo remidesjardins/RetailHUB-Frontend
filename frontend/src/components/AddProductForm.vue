@@ -41,14 +41,19 @@
         </div>
 
         <!-- Category Checkbox and Add Category -->
-        <div class="form-group">
-          <label for="category">Category</label>
-          <div class="category-row">
-            <input type="checkbox" id="tech-category" v-model="product.category" value="Tech" />
-            <label for="tech-category">Tech</label>
-            <button type="button" class="add-category-btn">+ Add category</button>
-          </div>
-        </div>
+        <div class="form-row">
+          <div class="form-group">
+              <div class="category-section">
+                <label for="categories">Categories</label>
+                <select v-model="selectedCategory">
+                  <option v-for="category in categories" :key="category.id" :value="category.id">
+                    {{ category.name }}
+                  </option>
+                </select>
+                <button type="button" @click="openCategoryOverlay">Add Category</button>
+              </div>
+            </div>
+        </div>div>
 
         <!-- Stock, Reorder Level -->
         <div class="form-row">
@@ -71,12 +76,24 @@
 
         <button type="submit" class="submit-btn">Add product</button>
       </form>
+      <!-- Include the CategoryOverlay component -->
+      <CategoryOverlay
+          :show="showCategoryOverlay"
+          :categories="categories"
+          @addCategory="addCategory"
+          @removeCategory="removeCategory"
+          @closeOverlay="closeCategoryOverlay"
+      />
     </div>
   </div>
 </template>
 
 
 <script>
+
+import CategoryOverlay from '@/components/Category.vue';
+
+
 export default {
   data() {
     return {
@@ -90,10 +107,69 @@ export default {
         Details: '',
         Image: '',
         Slot: ''
-      }
+      },
+      showCategoryOverlay: false,
+      selectedCategory: '',
+      categories: [],
     };
   },
+  created() {
+    this.fetchCategories();
+  },
   methods: {
+    async fetchCategories() {
+      try {
+        const response = await fetch('https://com.servhub.fr/api/categories');
+        console.log(response);
+        if (response.ok) {
+          this.categories = await response.json(); // Assume the response is an array of categories
+        } else {
+          console.error('Failed to fetch categories');
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    },
+    async addCategory(newCategory) {
+      try {
+        console.log("Category to add : ", newCategory);
+        const response = await fetch('https://com.servhub.fr/api/categories', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name: newCategory }), // Assuming the API expects a 'name' field
+        });
+        if (response.ok) {
+          const createdCategory = await response.json();
+          this.categories.push(createdCategory); // Add the new category to the list
+        } else {
+          console.error('Failed to add category');
+        }
+      } catch (error) {
+        console.error('Error adding category:', error);
+      }
+    },
+    async removeCategory(category) {
+      try {
+        console.log("Category to REMOVE: ", category);
+        console.log(category._id);
+        const response = await fetch(`https://com.servhub.fr/api/categories/${category._id}`, {
+          method: 'DELETE',
+        });
+        if (response.ok) {
+          this.categories = this.categories.filter(cat => cat.id !== category.id); // Remove the deleted category from the list
+        } else {
+          console.error('Failed to remove category');
+        }
+      } catch (error) {
+        console.error('Error removing category:', error);
+      }
+    },
+    submitForm() {
+      // Handle form submission
+      console.log('Form submitted with category ID:', this.selectedCategory);
+    },
     async addProduct() {
       try {
         // Send POST request to add the product
@@ -123,6 +199,15 @@ export default {
         alert('An error occurred while adding the product.');
       }
     },
+    openCategoryOverlay() {
+      this.showCategoryOverlay = true;
+    },
+    closeCategoryOverlay() {
+      this.showCategoryOverlay = false;
+    },
+  },
+  components: {
+    CategoryOverlay,
   }
 };
 </script>
@@ -201,7 +286,7 @@ export default {
   font-size: 16px;
 }
 
-.category-row {
+.category-section {
   display: flex;
   align-items: center;
 }

@@ -15,7 +15,7 @@
               class="product"
               @click="selectProduct(product)"
           >
-            <img :src="product.imageUrl || getProductImage(product.SKU)" alt="product image" class="product-image" />
+            <img :src="product.Image || getProductImage(product.SKU)" alt="product image" class="product-image" />
             <div class="product-id">{{ product.SKU }}</div>
             <div class="product-details">
               <div class="product-name">{{ product.name }}</div>
@@ -157,9 +157,12 @@ export default {
 }
 
 .product-image {
-  width: 50px;
+  width: auto;
   height: auto;
-  margin: 10px auto;
+  max-width: 70%;
+  border-radius: 15%;
+  max-height: 60%;
+  margin: 20px auto;
 }
 
 .product-id {

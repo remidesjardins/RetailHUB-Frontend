@@ -8,7 +8,7 @@
         <h1 class="product-title">{{ product.name }}</h1>
         <span class="category-label">{{ product.category }}</span>
         <span class="sku">{{ product.SKU }}</span>
-        <img :src="productImage" alt="Product image" />
+        <img :src="product.Image" alt="Product image" />
         <div class="stock-info">
           <span>Available stock:</span>
           <div class="stock-level">

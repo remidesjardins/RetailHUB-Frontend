@@ -1,6 +1,11 @@
 <template>
   <div class="sidebar">
-    <div v-for="(item, index) in menuItems" :key="index" class="menu-item">
+    <div
+        v-for="(item, index) in menuItems"
+        :key="index"
+        class="menu-item"
+        @click="item.action"
+    >
       <i :class="item.icon"></i>
     </div>
   </div>
@@ -11,13 +16,27 @@ export default {
   data() {
     return {
       menuItems: [
-        { icon: 'fa-solid fa-bell' }, // Icône de la cloche
-        { icon: 'fa-solid fa-cart-shopping' }, // Icône du panier
-        { icon: 'fas fa-inbox' }, // Icône de l'enveloppe
-        { icon: 'fas fa-user' }, // Icône de l'utilisateur
+        {icon: 'fa-solid fa-bell', action: this.notifyFunction}, // Icône de la cloche
+        {icon: 'fa-solid fa-cart-shopping', action: this.cartFunction}, // Icône du panier
+        {icon: 'fa-solid fa-inbox', action: this.inboxFunction}, // Icône de l'inbox
+        {icon: 'fa-solid fa-user', action: this.profileFunction}, // Icône de l'utilisateur
       ],
     };
   },
+  methods: {
+    notifyFunction() {
+      this.$router.push({name: "Bag"});
+    },
+    cartFunction() {
+      this.$router.push({name: "Sale"});
+    },
+    inboxFunction() {
+      this.$router.push({name: "ClientSearch"});
+    },
+    profileFunction() {
+      alert('Profile clicked!');
+    }
+  }
 };
 </script>
 
