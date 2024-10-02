@@ -42,18 +42,18 @@
 
         <!-- Category Checkbox and Add Category -->
         <div class="form-row">
-          <div class="form-group">
-              <div class="category-section">
-                <label for="categories">Categories</label>
-                <select v-model="selectedCategory">
-                  <option v-for="category in categories" :key="category.id" :value="category.id">
-                    {{ category.name }}
-                  </option>
-                </select>
-                <button type="button" @click="openCategoryOverlay">Add Category</button>
-              </div>
+          <div class="form-group category-group">
+            <label for="categorySelect" class="category-label">Select Category</label>
+            <div class="category-wrapper">
+              <select id="categorySelect" class="category-select">
+                <option v-for="category in categories" :key="category._id" :value="category._id">
+                  {{ category.name }}
+                </option>
+              </select>
+              <button type="button" class="category-btn" @click="openCategoryOverlay">Add Category</button>
             </div>
-        </div>div>
+          </div>
+        </div>
 
         <!-- Stock, Reorder Level -->
         <div class="form-row">
@@ -130,35 +130,21 @@ export default {
         console.error('Error fetching categories:', error);
       }
     },
-    async addCategory(newCategory) {
-      try {
-        console.log("Category to add : ", newCategory);
-        const response = await fetch('https://com.servhub.fr/api/categories', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ name: newCategory }), // Assuming the API expects a 'name' field
-        });
-        if (response.ok) {
-          const createdCategory = await response.json();
-          this.categories.push(createdCategory); // Add the new category to the list
-        } else {
-          console.error('Failed to add category');
-        }
-      } catch (error) {
-        console.error('Error adding category:', error);
+    addCategory(newCategory) {
+      // Push the new category to the list of categories for the dropdown
+      if (newCategory._id && newCategory.name) {
+        this.categories.push(newCategory);
+        // Optionally, set the newly added category as the selected category
+        this.selectedCategory = newCategory._id;
       }
     },
     async removeCategory(category) {
       try {
-        console.log("Category to REMOVE: ", category);
-        console.log(category._id);
         const response = await fetch(`https://com.servhub.fr/api/categories/${category._id}`, {
           method: 'DELETE',
         });
         if (response.ok) {
-          this.categories = this.categories.filter(cat => cat.id !== category.id); // Remove the deleted category from the list
+          this.categories = this.categories.filter(cat => cat._id !== category._id); // Use _id to filter the correct category
         } else {
           console.error('Failed to remove category');
         }
@@ -302,10 +288,52 @@ export default {
 .submit-btn {
   padding: 10px 20px;
   background-color: #a6a5a5;
-  color: white;
+  color: black;
   border: none;
   border-radius: 25px;
   cursor: pointer;
   font-size: 16px;
 }
+.category-label{
+  margin-top: 15px;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.category-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.category-select {
+  width: 70%;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 25px;
+  border: 1px solid black;
+  background-color: white;
+  appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><polygon fill="%23666" points="0,5 10,15 20,5"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 15px;
+}
+
+.category-btn {
+  padding: 10px 15px;
+  margin-left: 10px;
+  background-color: #a6a5a5;
+  color: black;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.category-btn:hover {
+  background-color: #aac4f6;
+}
+
 </style>

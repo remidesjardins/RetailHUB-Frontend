@@ -7,25 +7,33 @@
     <div class="main-content">
       <!-- Search Form -->
       <div class="search-form">
-        <form @submit.prevent="searchClient">
-          <label>
-            Last Name
-            <input type="text" v-model="search.lastName" />
-          </label>
-          <label>
-            First Name
-            <input type="text" v-model="search.firstName" />
-          </label>
+        <form @submit.prevent="filteredClients">
+          <div>
+            <label>
+              Last Name
+              <input type="text" v-model="search.lastName" class="custom-input"/>
+            </label>
+          </div>
+          <div>
+            <label>
+              First Name
+              <input type="text" v-model="search.firstName" class="custom-input"/>
+            </label>
+          </div>
           <p>Or</p>
-          <label>
-            Phone Number
-            <input type="text" v-model="search.phoneNumber" />
-          </label>
+          <div>
+            <label>
+              Phone Number
+              <input type="text" v-model="search.phoneNumber" class="custom-input"/>
+            </label>
+          </div>
           <p>Or</p>
-          <label>
-            E-Mail
-            <input type="text" v-model="search.email" />
-          </label>
+          <div>
+            <label>
+              E-Mail
+              <input type="text" v-model="search.email" class="custom-input"/>
+            </label>
+          </div>
         </form>
       </div>
 
@@ -43,18 +51,26 @@
             <p>{{ client.email }}</p>
           </div>
         </div>
-        <button class="create-client-btn">Create client</button>
+        <button class="create-client-btn" @click="openCreateClient">Create client</button>
       </div>
     </div>
+
+    <CreateClient
+        v-if="showCreateClient"
+        @close="closeCreateClient"
+    />
+
   </div>
 </template>
 
 <script>
 import NavBar from "@/components/NavBar.vue";
+import CreateClient from "@/components/CreateClient.vue";
 
 export default {
   components: {
     NavBar,
+    CreateClient,
   },
   data() {
     return {
@@ -66,6 +82,7 @@ export default {
         email: '',
       },
       clients: [],
+      showCreateClient: false,
     };
   },
   computed: {
@@ -101,7 +118,13 @@ export default {
     normalizePhoneNumber(phoneNumber) {
       // Enlever tous les caractères qui ne sont pas des chiffres
       return phoneNumber.replace(/\D/g, '');
-    }
+    },
+    openCreateClient() {
+      this.showCreateClient = true;
+    },
+    closeCreateClient() {
+      this.showCreateClient = false;
+    },
   },
   mounted() {
     this.fetchInitialClients();
@@ -113,12 +136,15 @@ export default {
 .client-site {
   display: flex;
   height: 100vh;
+  justify-content: center;
+  align-items: center;
 }
 
 .main-content {
-  display: flex; /* Ajoutez flex pour aligner les éléments en ligne */
-  flex-direction: row; /* Dispose les éléments horizontalement */
-  justify-content: space-between; /* Espace entre les éléments */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
   padding: 20px;
   width: 100%;
 }
@@ -153,16 +179,29 @@ export default {
   max-width: 300px; /* Assurez-vous que la largeur ne dépasse pas trop */
 }
 
+.search-form div{
+  margin-top: 10px;
+}
+
 .search-form label {
   font-size: 18px;
-  margin-bottom: 5px;
+  margin: 5px;
 }
 
 .search-form input {
   padding: 12px;
-  border-radius: 25px;
+  border-radius: 5px;
   border: 1px solid #ccc;
   width: 100%;
+}
+
+.custom-input {
+  border-radius: 10px;
+  transition: box-shadow 0.3s ease;
+}
+
+.custom-input:focus {
+  box-shadow: 0px 0px 10px rgba(0, 123, 255, 0.5);
 }
 
 .clients-list {
@@ -182,16 +221,21 @@ export default {
 .client-card {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  background-color: white;
+  align-items: stretch; /* Assure que les hauteurs de .client-info et .client-contact soient les mêmes */
   padding: 15px;
-  border-radius: 10px;
   margin-bottom: 15px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .client-info {
-  flex: 1;
+  flex: 2;
+  background-color: white;
+  border-radius: 10px;
+  padding: 15px;
+  margin-right: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column; /* Aligne le contenu verticalement */
+  justify-content: center; /* Centre le contenu verticalement */
 }
 
 .client-info .client-name {
@@ -201,9 +245,15 @@ export default {
 }
 
 .client-contact {
+  flex: 1;
+  background-color: white;
+  border-radius: 10px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  flex-direction: column; /* Aligne le contenu verticalement */
+  justify-content: center; /* Centre le contenu verticalement */
 }
 
 .client-contact p {

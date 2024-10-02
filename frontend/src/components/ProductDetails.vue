@@ -18,7 +18,7 @@
 
         </div>
         <div class="price">{{ product.price }} $</div>
-        <button class="add-to-cart">Add to cart</button>
+        <button class="add-to-cart" @click="addToCart(product)">Add to cart</button>
       </div>
 
       <!-- Right content: Overview -->
@@ -106,6 +106,9 @@ export default {
     // Optional method to fetch a product image (if available)
     fetchProductImage() {
       this.productImage = "https://via.placeholder.com/150?text=No+Image";
+    },
+    addToCart(product) {
+      this.$store.commit("addToCart", product);
     }
   },
   components: {

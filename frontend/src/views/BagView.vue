@@ -85,14 +85,7 @@ export default {
           .catch((error) => console.error(error));
     },
     loadCartProducts() {
-      const products = localStorage.getItem('cartProducts');
-      const today = this.getTodayDate();
-      this.cartProducts = products
-          ? JSON.parse(products).map(product => ({
-            ...product,
-            selectedDate: today, // Date d'aujourd'hui par défaut
-          }))
-          : [];
+      this.cartProducts = this.$store.state.bagContents;
     },
     transferInvoice() {
       alert('Invoice transferred!');
