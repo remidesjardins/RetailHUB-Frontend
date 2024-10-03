@@ -56,7 +56,7 @@
       <div class="clients-list">
         <h3>Clients</h3>
         <div v-if="filteredClients.length === 0">No clients found.</div>
-        <div v-for="client in filteredClients" :key="client.id" class="client-card">
+        <div v-for="client in filteredClients" :key="client.id" class="client-card" @click="goToClientPage(client._id)">
           <div class="client-info">
             <p class="client-name">{{ client.name }}</p>
             <p>{{ client.address }}</p>
@@ -143,6 +143,10 @@ export default {
     },
     closeCreateClient() {
       this.showCreateClient = false;
+    },
+    goToClientPage(clientId) {
+      console.log("Client :", clientId);
+      this.$router.push(`/client/${clientId}`);
     },
   },
   mounted() {
