@@ -2,7 +2,7 @@
   <header class="header">
     <SearchBar :searchQuery="searchQuery" @search="emitSearchQuery" />
 
-    <div class="icons">
+    <div class="icons" @click="goToCart">
       <i class="fa fa-shopping-cart"></i>
     </div>
   </header>
@@ -19,6 +19,9 @@ export default {
     emitSearchQuery(query) {
       this.$emit("search", query);
     },
+    goToCart() {
+      this.$router.push({name: "Bag"});
+    }
   }
 };
 </script>

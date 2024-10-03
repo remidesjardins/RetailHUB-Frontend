@@ -5,14 +5,18 @@
 </template>
 
 <script>
-export default {
-  mounted() {
+  export default {
+  created(){
+    this.$store.commit("initializeCart");
+  },
+    mounted() {
     this.$router.push('/');
   },
-};
+  };
 </script>
-<style>
+  <style>
 *{
   font-family: 'Arial', sans-serif;
+
 }
 </style>

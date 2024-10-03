@@ -64,7 +64,6 @@ export default {
 
               // Add the new category to the local array to update the overlay
               this.categories.push(createdCategory);
-
               // Clear the input field
               this.newCategory = "";
             }
@@ -108,6 +107,9 @@ export default {
   width: 400px;
   max-width: 90%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .input-field {
@@ -119,6 +121,24 @@ export default {
   font-size: 16px;
 }
 
+ul{
+  padding-left: 0;
+  margin-top: 10px;
+  max-height: 50vh; /* Set a fixed height for the category list */
+  overflow-y: auto;
+}
+
+li {
+  list-style: none;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 .submit-btn,
 .close-btn,
 .remove-btn {

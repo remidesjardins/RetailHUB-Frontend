@@ -4,14 +4,13 @@
     <NavBar class="navbar"></NavBar>
     <div class="content">
       <Header :searchQuery="searchQuery" @search="handleSearch" id="Header"/>
-      <div class="scrollable">
-        <ProductList
+
+      <ProductList
             :productList="filteredProducts"
             :text="'Recent Products'"
             :isEmpty="isEmpty"
             @productSelected="showProductDetailsOverlay"
         />
-      </div>
       <ProductDetails
           v-if="showProductDetails"
           :product="selectedProduct"
@@ -78,7 +77,6 @@ export default {
           })
           .then(data => {
             this.updateProducts(data);
-            localStorage.setItem('cartProducts', JSON.stringify(data));
           })
           .catch(error => {
             console.error('Error fetching products:', error.message);
@@ -113,27 +111,24 @@ export default {
 
 <style scoped>
 .home-container {
-  display: flex;
+  margin-left: 60px;
   max-width: 100vw;
+  flex-wrap: nowrap;
   overflow-x: auto;
-  flex-direction: row; /* Display navbar and content side by side */
-  height: 100vh; /* Full height of the viewport */
+  flex-direction: row;
+  height: 100vh;
 }
 
-.navbar {
-  width: 60px; /* Fixed width for the navbar */
-  background-color: #f0f0f0;
-}
 
 .content {
   margin-left: 20px;
-  flex-grow: 1; /* Take the remaining width */
+  flex-grow: 1;
   padding: 20px;
-  display: flex;
-  flex-direction: column; /* Align ProductList and CommandBoxes vertically */
-  justify-content: flex-start; /* Align items at the top */
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: flex-start;
   gap: 20px;
+  height: 100%; /* Ensure the content takes full height */
 }
 
 

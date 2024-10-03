@@ -108,6 +108,7 @@ export default {
       this.productImage = "https://via.placeholder.com/150?text=No+Image";
     },
     addToCart(product) {
+      console.log("ICI : ",product);
       this.$store.commit("addToCart", product);
     }
   },

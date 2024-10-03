@@ -23,7 +23,7 @@
 
           <div class="form-group">
             <label for="price">Price</label>
-            <input type="number" id="price" v-model="product.price" placeholder="Enter price" required />
+            <input type="number" id="price" v-model="product.price" step="any" placeholder="Enter price" required />
           </div>
         </div>
 
@@ -45,7 +45,7 @@
           <div class="form-group category-group">
             <label for="categorySelect" class="category-label">Select Category</label>
             <div class="category-wrapper">
-              <select id="categorySelect" class="category-select">
+              <select id="categorySelect" class="category-select" v-model="selectedCategory">
                 <option v-for="category in categories" :key="category._id" :value="category._id">
                   {{ category.name }}
                 </option>
@@ -134,6 +134,7 @@ export default {
       // Push the new category to the list of categories for the dropdown
       if (newCategory._id && newCategory.name) {
         this.categories.push(newCategory);
+        alert(`Category ${newCategory} added successfully.`);
         // Optionally, set the newly added category as the selected category
         this.selectedCategory = newCategory._id;
       }
@@ -158,6 +159,10 @@ export default {
     },
     async addProduct() {
       try {
+        const selectedCategoryObj = this.categories.find(cat => cat._id === this.selectedCategory);
+        if (selectedCategoryObj) {
+          this.product.category = selectedCategoryObj.name; // Set the category name
+        }
         // Send POST request to add the product
         const response = await fetch("https://com.servhub.fr/api/products", {
           method: "POST",

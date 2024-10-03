@@ -7,7 +7,6 @@ import BagView from "@/views/BagView.vue";
 import ClientSearchView from "@/views/ClientSearchView.vue";
 import ClientView from "@/views/ClientView.vue";
 import InvoiceSearchView from "@/views/InvoiceSearchView.vue";
-import InvoiceView from "@/views/InvoiceView.vue";
 import EmployeeView from "@/views/EmployeeView.vue";
 
 const routes = [
@@ -61,14 +60,6 @@ const routes = [
         path: '/invoicesearch',
         name: 'InvoiceSearch',
         component: InvoiceSearchView,
-    },
-    {
-        path: '/invoice/:invoiceId',
-        name: 'Invoice',
-        component: InvoiceView,
-        props: (route) => ({
-            invoiceId: route.params.invoiceId,
-        }),
     },
 ]
 

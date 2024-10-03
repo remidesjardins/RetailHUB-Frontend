@@ -81,6 +81,7 @@ export default {
   display: flex;
   gap: 16px;
   justify-content: start;
+  overflow-x: auto;
 }
 
 .command-box {

@@ -1,7 +1,22 @@
 <template>
   <div class="client-site">
+    <NavBar/>
     <!-- Sidebar / Navbar -->
-    <NavBar />
+
+    <div class="top-bar">
+      <button
+          :class="{ active: activeTab === 'client' }"
+          @click="switchTab('client')"
+      >
+        Client
+      </button>
+      <button
+          :class="{ active: activeTab === 'invoice' }"
+          @click="switchTab('invoice')"
+      >
+        Invoice
+      </button>
+    </div>
 
     <!-- Main content -->
     <div class="main-content">
@@ -64,13 +79,13 @@
 </template>
 
 <script>
-import NavBar from "@/components/NavBar.vue";
 import CreateClient from "@/components/CreateClient.vue";
+import NavBar from "@/components/NavBar.vue";
 
 export default {
   components: {
-    NavBar,
     CreateClient,
+    NavBar,
   },
   data() {
     return {
@@ -112,8 +127,12 @@ export default {
           })
           .catch((error) => console.error(error));
     },
+
     switchTab(tab) {
       this.activeTab = tab;
+      if (tab === 'invoice') {
+        this.$router.push({ name: 'InvoiceSearch' }); // Redirect to InvoiceSearchView
+      }
     },
     normalizePhoneNumber(phoneNumber) {
       // Enlever tous les caractères qui ne sont pas des chiffres
@@ -149,27 +168,56 @@ export default {
   width: 100%;
 }
 
+.client-site {
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 20px;
+  width: 100%;
+}
+
 .top-bar {
   display: flex;
-  justify-content: center;
+  justify-content: center; /* Center the buttons horizontally */
+  position: absolute;
+  border-radius: 30px;
+  background-color: #fafafa;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 5px 3px;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   margin-bottom: 20px;
+  z-index: 100;
 }
 
 .top-bar button {
   padding: 12px 24px;
   border: none;
-  border-radius: 30px;
-  background-color: #eaeaea;
+  border-radius: 30px; /* Make the button rounded */
+  background-color: #f0f0f0; /* Light grey background */
   cursor: pointer;
   margin: 0 10px;
   font-size: 16px;
   color: #333;
   transition: background-color 0.3s ease;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3); /* Add subtle shadow */
 }
 
 .top-bar button.active {
-  background-color: #80cbc4;
-  color: white;
+  background-color: #80cbc4; /* Active state background */
+}
+
+.top-bar button:hover {
+  background-color: #e0e0e0; /* Slightly darker grey when hovered */
 }
 
 .search-form {
@@ -193,6 +241,21 @@ export default {
   border-radius: 5px;
   border: 1px solid #ccc;
   width: 100%;
+}
+.search-form {
+  flex-grow: 1;
+  margin: 0 20px;
+}
+.search-bar input {
+  width: 90%;
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid black;
+  border-radius: 30px;
+  background: white;
+}
+.search-bar input::placeholder {
+  color: black;
 }
 
 .custom-input {
@@ -275,5 +338,13 @@ export default {
 
 .create-client-btn:hover {
   background-color: #4caf50;
+}
+.search-bar{
+  width: 100%;
+}
+.search-bar input {
+  padding: 10px;
+  font-size: 16px;
+  width: 300px;
 }
 </style>
