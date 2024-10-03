@@ -40,16 +40,7 @@
               <p>Tax: {{ tax }} $</p>
               <h2>Total: {{ total }} $</h2>
             </div>
-            <select v-model="this.paymentStatus" class="paymentStatus">
-              <option>Pending</option>
-              <option>Completed</option>
-            </select>
-            <select v-model="this.paymentMethod" class="paymentMethod">
-              <option>Cash</option>
-              <option>Credit Card</option>
-              <option>Bank Transfer</option>
-              <option>PayPal</option>
-            </select>
+            <div id="paypal-button-container"></div>
             <button @click="transferInvoice">Transfer the invoice</button>
           </div>
         </div>
@@ -61,6 +52,7 @@
 <script>
 import NavBar from "@/components/NavBar.vue";
 import ClientSearchOverlay from "@/components/ClientSearchOverlay.vue";
+import { loadScript } from "@paypal/paypal-js"; // SDK PayPal
 
 export default {
   components: {
@@ -74,8 +66,8 @@ export default {
       showClientSearch: false,
       client: undefined,
       clientName: "Identity your client",
-      paymentStatus: "",
-      paymentMethod: "",
+      paymentStatus: "", // Updated payment status from PayPal
+      paymentMethod: "PayPal", // We will use PayPal Sandbox
     };
   },
   computed: {
@@ -108,63 +100,57 @@ export default {
       this.cartProducts = this.$store.state.bagContents.reverse();
     },
     transferInvoice() {
-      // Préparer les headers
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
+      this.cartProducts.forEach(product => {
+        console.log("PayPal Product", product);
+        this.$store.dispatch("handleReceipt", {payload: product, number: product.quantity});
+      })
 
-      // Préparer la liste des produits à partir du panier
       const products = this.cartProducts.map(product => ({
         SKU: product.product.SKU,
         quantity: product.quantity,
         price_per_unit: product.product.price
       }));
 
-      // Calculer le prix total
-      const total_price = this.total; // Utilise la computed property 'total'
+      const total_price = this.total;
 
-      // Préparer les données pour la requête
       const row = JSON.stringify({
         products: products,
         total_price: total_price,
-        customer_id: this.client._id, // L'ID du client doit être défini après la sélection du client,
+        customer_id: this.client._id,
         payment_status: this.paymentStatus,
-        payment_method: this.paymentMethod, // Méthode de paiement choisie
-        soldBy: "66fdffb56790cc1514a6a267"// Utilisateur qui vend, supposant que l'ID de l'utilisateur est stocké dans le store
+        payment_method: this.paymentMethod,
+        soldBy: "66fdffb56790cc1514a6a267"
       });
 
-      // Options de la requête
-      const requestOptions = {
-        headers: myHeaders,
+      fetch("https://com.servhub.fr/api/sales/", {
+        headers: { "Content-Type": "application/json" },
         method: "POST",
         body: row,
         redirect: "follow"
-      };
-
-      // Effectuer la requête
-      fetch("https://com.servhub.fr/api/sales/", requestOptions)
+      })
           .then(response => response.json())
           .then(result => {
             console.log(result);
             this.$router.push({name: "Sale"});
             this.$store.commit("removeAllFromCart");
-            // Gérer la réponse, comme afficher une notification ou rediriger l'utilisateur
           })
           .catch(error => {
             console.error('Erreur lors de la création de la facture:', error);
-            // Gérer l'erreur, comme afficher un message d'erreur à l'utilisateur
           });
     },
     deleteProductFromCart(product) {
-      this.$store.commit("removeFromCart", product);
+      this.$store.dispatch("removeFromCartAndHandleReceipt", product);
     },
     increaseQuantity(index, product) {
       this.cartProducts[index].quantity++;
       this.$store.commit("updateQuantity", {_id: product.product._id, quantity: this.cartProducts[index].quantity});
+      this.$store.dispatch("handleReceipt", {payload: product.product, number: -1});
     },
     decreaseQuantity(index, product) {
       if (this.cartProducts[index].quantity > 1) {
         this.cartProducts[index].quantity--;
         this.$store.commit("updateQuantity", {_id: product.product._id, quantity: this.cartProducts[index].quantity});
+        this.$store.dispatch("handleReceipt", {payload: product.product, number: 1});
       }
     },
     openClientOverlay() {
@@ -178,9 +164,41 @@ export default {
       this.client = client;
       this.clientName = client.name;
     },
+    setupPayPalButton() {
+      loadScript({
+        "client-id": "AZARWGYIQ1t8j1JqA2s-3G4ttRXc-uivXrk31VcVFnuQHMADwtmhEHRaHe7F_WAgZbp5UZO7mnnvPHyM", // Remplace par ton ID Sandbox
+        currency: "CAD"
+      }).then(paypal => {
+        paypal.Buttons({
+          createOrder: (data, actions) => {
+            return actions.order.create({
+              purchase_units: [{
+                amount: {
+                  value: this.total,
+                }
+              }]
+            });
+          },
+          onApprove: (data, actions) => {
+            return actions.order.capture().then(details => {
+              this.paymentStatus = "Completed"; // Mettre à jour le statut du paiement
+              console.log("Transaction effectuée par " + details.payer.name.given_name);
+              this.transferInvoice();
+            });
+          },
+          onError: (err) => {
+            console.error('Erreur lors de la transaction PayPal:', err);
+            this.paymentStatus = "Failed"; // Si une erreur survient, marquer comme échoué
+          }
+        }).render("#paypal-button-container");
+      }).catch(err => {
+        console.error('Erreur lors du chargement du SDK PayPal:', err);
+      });
+    }
   },
   mounted() {
     this.loadCartProducts();
+    this.setupPayPalButton(); // Configurer le bouton PayPal quand le composant est monté
   }
 };
 </script>

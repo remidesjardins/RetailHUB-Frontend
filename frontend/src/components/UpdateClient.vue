@@ -5,18 +5,27 @@
       <h1>Modify Client</h1>
       <form @submit.prevent="updateClient">
         <div class="form-group">
-          <input type="text" placeholder="Last Name" v-model="client.name" required/>
+          <label for="name">Last Name</label>
+          <input type="text" id="name" v-model="client.name" required/>
+        </div>
+
+        <div class="form-group form-inline">
+          <div>
+            <label for="phone">Phone Number</label>
+            <input type="text" id="phone" v-model="client.phone" required />
+          </div>
+          <div>
+            <label for="email">Email</label>
+            <input type="email" id="email" v-model="client.email" required />
+          </div>
         </div>
 
         <div class="form-group">
-          <input type="text" placeholder="Phone Number" v-model="client.phone" required />
-          <input type="email" placeholder="Email" v-model="client.email" required />
+          <label for="address">Address</label>
+          <textarea id="address" placeholder="Address" v-model="client.address" required></textarea>
         </div>
 
-        <div class="form-group">
-          <textarea placeholder="Adress" v-model="client.address" required></textarea>
-        </div>
-        <button type="submit" class="update-client-button" @click="updateClient">Modify client</button>
+        <button type="submit" class="update-client-button">Modify Client</button>
       </form>
     </div>
   </div>
@@ -83,10 +92,78 @@ export default {
 
 .overlay-content {
   background: white;
-  padding: 20px;
+  padding: 30px;
   border-radius: 20px;
   width: 400px;
   max-width: 90%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  font-size: 16px;
+}
+
+.form-inline {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.form-inline div {
+  flex: 1;
+}
+
+.form-group textarea {
+  resize: none;
+  height: 80px;
+}
+
+.update-client-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.update-client-button:hover {
+  background-color: #45a049;
 }
 </style>

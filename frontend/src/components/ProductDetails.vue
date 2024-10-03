@@ -18,7 +18,20 @@
 
         </div>
         <div class="price">{{ product.price }} $</div>
-        <button class="add-to-cart" @click="addToCart(product)">Add to cart</button>
+
+        <!-- Add to cart or update quantity -->
+        <div v-if="isProductInCart" class="cart-quantity">
+          <button class="cart-btn" @click="decrementQuantity">-</button>
+          <span class="quantity-number">{{ productQuantityInCart }}</span>
+          <button class="cart-btn" @click="incrementQuantity">+</button>
+        </div>
+        <button
+            v-else
+            class="add-to-cart"
+            @click="addToCart(product)"
+        >
+          Add to cart
+        </button>
       </div>
 
       <!-- Right content: Overview -->
@@ -57,6 +70,7 @@
 <script>
 
 import ModifyProductForm from '@/components/ModifyProductForm.vue'; // Path to your new ModifyProductForm.vue file
+import throttle from 'lodash/throttle';
 
 export default {
   props: {
@@ -69,8 +83,19 @@ export default {
   data() {
     return {
       showUpdateForm: false,
-      productImage: "https://via.placeholder.com/150?text=No+Image" // Default product image
+      productImage: "https://via.placeholder.com/150?text=No+Image", // Default product image,
+      productInCart: false
+
     };
+  },
+  computed:{
+    isProductInCart() {
+      return this.$store.state.bagContents.some(item => item.product._id === this.product._id);
+    },
+    productQuantityInCart() {
+      const cartItem = this.$store.state.bagContents.find(item => item.product._id === this.product._id);
+      return cartItem ? cartItem.quantity : 0;
+    }
   },
   methods: {
     deleteProduct(productSKU) {
@@ -108,9 +133,30 @@ export default {
       this.productImage = "https://via.placeholder.com/150?text=No+Image";
     },
     addToCart(product) {
-      console.log("ICI : ",product);
       this.$store.commit("addToCart", product);
-    }
+      this.$store.dispatch("handleReceipt", { payload: product, number: -1 });
+      this.productInCart = true;
+
+      setTimeout(() => {
+        this.$store.dispatch("handleCheckTicket", product);
+      }, 300000);
+    },
+
+    incrementQuantity: throttle(function() {
+      this.$store.commit("updateQuantity", { _id: this.product._id, quantity: this.productQuantityInCart + 1 });
+      this.$store.dispatch("handleReceipt", { payload: this.product, number: -1 });
+    }, 500), // Prevent multiple clicks within 500ms
+
+    decrementQuantity: throttle(function() {
+      if (this.productQuantityInCart > 1) {
+        this.$store.commit("updateQuantity", { _id: this.product._id, quantity: this.productQuantityInCart - 1 });
+        this.$store.dispatch("handleReceipt", { payload: this.product, number: 1 });
+      } else {
+        const quantityToRelease = this.productQuantityInCart;
+        this.$store.commit("removeFromCart", { product: this.product });
+        this.$store.dispatch("handleReceipt", { payload: this.product, number: quantityToRelease });
+      }
+    }, 500)
   },
   components: {
     ModifyProductForm,
@@ -270,4 +316,68 @@ export default {
 .delete-button:hover {
   color: darkred;
 }
+
+.add-to-cart {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 25px;
+  background-color: #007bff; /* Custom blue for the add-to-cart button */
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.add-to-cart:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Quantity buttons container */
+.cart-quantity {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.cart-btn {
+  padding: 10px 15px;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 50%;
+  margin: 5px;
+  transition: all 0.2s ease;
+  animation: bounce 0.3s; /* Add bounce animation */
+}
+
+.cart-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Keyframes for bounce animation */
+@keyframes bounce {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.2);
+  }
+  60% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.quantity-number {
+  font-size: 18px;
+  margin: 0 15px;
+}
+
 </style>

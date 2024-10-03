@@ -8,18 +8,8 @@
     />
     <NavBar/>
     <div class="top-bar">
-      <button
-          :class="{ active: activeTab === 'client' }"
-          @click="switchTab('client')"
-      >
-        Client
-      </button>
-      <button
-          :class="{ active: activeTab === 'invoice' }"
-          @click="switchTab('invoice')"
-      >
-        Invoice
-      </button>
+      <button :class="{ active: activeTab === 'client' }" @click="switchTab('client')">Client</button>
+      <button :class="{ active: activeTab === 'invoice' }" @click="switchTab('invoice')">Invoice</button>
     </div>
     <div class="client-header">
       <div class="client-info">
@@ -62,6 +52,7 @@ export default {
       sales: [],
       showUpdateClient: false,
       clientCopy: {},
+      activeTab: 'client',
     };
   },
   methods: {
@@ -95,7 +86,7 @@ export default {
                 if (sale.customer_id === this.clientId) {
                   return {
                     _id: sale._id,
-                    customer_name: this.client.name || 'Unknown Customer',
+                    customer: this.client,
                     total_price: sale.total_price,
                     reference: `I-${sale._id.substring(0, 8)}`,
                   };
@@ -122,6 +113,15 @@ export default {
       this.showUpdateClient = false; // Ferme l'overlay
       this.client = updatedClient;
     },
+    switchTab(tab) {
+      this.activeTab = tab;
+      if (tab === 'client') {
+        this.$router.push({name: 'ClientSearch'});
+      }
+      if(tab === 'invoice'){
+        this.$router.push({name: 'InvoiceSearch'})
+      }
+    },
   },
   mounted() {
     this.fetchClientInfo();
@@ -131,6 +131,14 @@ export default {
 </script>
 
 <style scoped>
+.top-section {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: white;
+  padding-bottom: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow to distinguish it */
+}
 .top-bar {
   display: flex;
   justify-content: center; /* Center the buttons horizontally */
@@ -208,5 +216,29 @@ export default {
   border-radius: 10px;
   text-align: center;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.top-bar {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
+  background-color: white;
+}
+
+.top-bar button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 30px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  margin: 0 10px;
+  font-size: 16px;
+  color: #333;
+  transition: background-color 0.3s ease;
+}
+
+.top-bar button.active {
+  background-color: #80cbc4;
+  color: white;
 }
 </style>

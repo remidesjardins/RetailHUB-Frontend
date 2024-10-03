@@ -49,16 +49,17 @@ export default {
         if (Array.isArray(data) && data.length > 0) {
           this.sales = await Promise.all(
               data.map(async sale => {
-                const customerName = await this.fetchCustomerName(sale.customer_id);
+                const customer = await this.fetchCustomer(sale.customer_id);
                 return {
                   _id: sale._id,
-                  customer_name: customerName || 'Unknown Customer',
+                  customer: customer,
                   total_price: sale.total_price,
                   reference: `I-${sale._id.substring(0, 8)}`,
                 };
               })
           );
           this.filteredSales = this.sales; // Initially, show all sales
+          console.log("FilteredSales : ", this.sales);
         }
       } catch (error) {
         console.error('Error fetching sales:', error);
@@ -70,16 +71,17 @@ export default {
       const lowerQuery = query.toLowerCase();
       this.filteredSales = this.sales.filter(
           sale =>
-              sale.customer_name.toLowerCase().includes(lowerQuery) ||
+              sale.customer.name.toLowerCase().includes(lowerQuery) ||
               sale.reference.toLowerCase().includes(lowerQuery)
       );
     },
 
-    async fetchCustomerName(customer_id) {
+    async fetchCustomer(customer_id) {
       try {
         const response = await fetch(`https://com.servhub.fr/api/customers/${customer_id}`);
         const customerData = await response.json();
-        return customerData.name;
+        console.log(customerData);
+        return customerData;
       } catch (error) {
         console.error('Error fetching customer details:', error);
         return null;
@@ -89,7 +91,7 @@ export default {
     switchTab(tab) {
       this.activeTab = tab;
       if (tab === 'client') {
-        this.$router.push({ name: 'ClientSearch' });
+        this.$router.push({name: 'ClientSearch'});
       }
     },
   },
@@ -143,17 +145,18 @@ export default {
 
 /* Scrollable Recent Sales Section */
 .recent-sales {
-  margin-top: 20px;
-  margin-left: 80px;
+  margin-top: 10px;
   flex-grow: 1;
   overflow-y: auto;
   max-height: 75%; /* Adjust the height as needed */
   padding-right: 20px; /* Add some padding for better scrollability */
 }
+
 .invoice-search {
   margin-left: 65px;
   width: calc(100% - 65px);
 }
+
 .invoice-list {
   display: flex;
   flex-wrap: wrap;

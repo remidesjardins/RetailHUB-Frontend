@@ -70,7 +70,7 @@ export default {
     },
     accessStats() {
       // Handle accessing stats
-      console.log("Access stats");
+      this.$router.push({name: "Admin"});
     },
     logOut() {
       // Handle logout logic

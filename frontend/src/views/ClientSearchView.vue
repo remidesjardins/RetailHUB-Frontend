@@ -2,7 +2,7 @@
   <div class="client-site">
     <NavBar/>
     <!-- Sidebar / Navbar -->
-
+    <div class="top-section"></div>
     <div class="top-bar">
       <button
           :class="{ active: activeTab === 'client' }"

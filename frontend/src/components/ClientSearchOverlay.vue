@@ -1,39 +1,32 @@
 <template>
   <div class="overlay-container">
     <div class="overlay">
-      <button class="close-button" @click="closeClientSearch">✖</button>
+      <button class="close-button" @click="closeClientSearch"><i class="fa-solid fa-xmark"></i></button>
 
       <!-- Main Content inside Overlay -->
       <div class="main-content">
         <!-- Search Form -->
         <div class="search-form">
           <form @submit.prevent="filteredClients">
-            <div>
-              <label>
-                Last Name
-                <input type="text" v-model="search.lastName" class="custom-input"/>
-              </label>
+            <div class="form-group">
+              <label>Last Name</label>
+              <input type="text" v-model="search.lastName" class="custom-input"/>
             </div>
-            <div>
-              <label>
-                First Name
-                <input type="text" v-model="search.firstName" class="custom-input"/>
-              </label>
+            <div class="form-group">
+              <label>First Name</label>
+              <input type="text" v-model="search.firstName" class="custom-input"/>
             </div>
-            <p>Or</p>
-            <div>
-              <label>
-                Phone Number
-                <input type="text" v-model="search.phoneNumber" class="custom-input"/>
-              </label>
+            <p class="separator">Or</p>
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="text" v-model="search.phoneNumber" class="custom-input"/>
             </div>
-            <p>Or</p>
-            <div>
-              <label>
-                E-Mail
-                <input type="text" v-model="search.email" class="custom-input"/>
-              </label>
+            <p class="separator">Or</p>
+            <div class="form-group">
+              <label>E-Mail</label>
+              <input type="text" v-model="search.email" class="custom-input"/>
             </div>
+            <button type="submit" class="submit-btn">Search</button>
           </form>
         </div>
 
@@ -144,7 +137,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(0, 0, 0, 0.5); /* Overlay background */
+  background: rgba(0, 0, 0, 0.5);
   z-index: 999;
 }
 
@@ -176,36 +169,6 @@ export default {
   color: #f44336;
 }
 
-.top-bar {
-  display: flex;
-  justify-content: center;
-  position: sticky;
-  top: 0;
-  background-color: white;
-  padding: 10px 0;
-  z-index: 100;
-}
-
-.top-bar button {
-  padding: 12px 24px;
-  border: none;
-  border-radius: 30px;
-  background-color: #f0f0f0;
-  cursor: pointer;
-  margin: 0 10px;
-  font-size: 16px;
-  color: #333;
-  transition: background-color 0.3s ease;
-}
-
-.top-bar button.active {
-  background-color: #80cbc4;
-}
-
-.top-bar button:hover {
-  background-color: #e0e0e0;
-}
-
 .main-content {
   display: flex;
   flex-direction: column;
@@ -214,7 +177,44 @@ export default {
 }
 
 .search-form {
-  max-width: 100%;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.custom-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.separator {
+  margin: 10px 0;
+  text-align: center;
+  font-weight: bold;
+}
+
+.submit-btn {
+  background-color: #80cbc4;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background-color: #4caf50;
 }
 
 .clients-list {
@@ -232,11 +232,12 @@ export default {
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   margin-bottom: 10px;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
 }
 
-.client-info, .client-contact {
-  flex: 1;
-  padding: 10px;
+.client-card:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .create-client-btn {
@@ -251,5 +252,11 @@ export default {
 
 .create-client-btn:hover {
   background-color: #4caf50;
+}
+
+.client-info,
+.client-contact {
+  flex: 1;
+  padding: 10px;
 }
 </style>

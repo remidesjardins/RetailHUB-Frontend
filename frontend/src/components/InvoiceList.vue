@@ -9,7 +9,7 @@
           class="invoice-card"
       >
         <template v-if="sales.length">
-          <p class="customer-name">{{ sale.customer_name }}</p>
+          <p class="customer-name">{{ sale.customer.name }}</p>
           <p class="total-price">{{ sale.total_price }} €</p>
           <p class="sale-reference">{{ sale.reference }}</p>
 
@@ -57,6 +57,9 @@ export default {
     UpdateSaleForm,
   },
   methods: {
+    handleCustomerName(customer) {
+      console.log("CUSTOMER TA MERE :", customer);
+    },
     // Placeholder methods for updating and deleting sales
     updateSale(sale) {
       this.selectedSale = sale;
@@ -84,9 +87,9 @@ export default {
           console.error('Error deleting sale:', error);
         }
       }
-    }
-  }
-};
+    },
+  },
+}
 </script>
 
 <style scoped>

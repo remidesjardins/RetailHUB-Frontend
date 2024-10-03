@@ -5,15 +5,13 @@
 
       <form @submit.prevent="updateSale">
         <!-- Customer Name -->
-        <div class="form-group">
+        <div class="form-group customer-row">
           <label for="customer_name">Customer Name</label>
-          <input
-              type="text"
-              id="customer_name"
-              v-model="sale.customer_name"
-              placeholder="Enter customer name"
-              required
-          />
+          <!-- Display Customer Name and Modify Button on the same row -->
+          <div class="customer-info">
+            <p class="customer-name">{{ sale.customer?.name || 'Unknown Customer' }}</p>
+            <button type="button" class="modify-client-btn" @click="openClientOverlay">Modify Customer</button>
+          </div>
         </div>
 
         <!-- Total Price -->
@@ -52,15 +50,21 @@
         </div>
 
         <!-- Submit Button -->
-        <button type="submit" class="submit-btn">Update Sale</button>
-        <button type="button" class="close-btn" @click="closeOverlay">Close</button>
+        <div class="button-group">
+          <button type="submit" class="submit-btn">Update Sale</button>
+          <button type="button" class="close-btn" @click="closeOverlay">Close</button>
+        </div>
       </form>
     </div>
   </div>
+  <UpdateClient v-if="showClientOverlay" :client="sale.customer" @close="closeClientOverlay" @close-data="updateClientData"/>
 </template>
 
 <script>
+import UpdateClient from "@/components/UpdateClient.vue";
+
 export default {
+  components: { UpdateClient },
   props: {
     sale: {
       type: Object,
@@ -71,20 +75,25 @@ export default {
       default: false
     }
   },
+  data() {
+    return {
+      showClientOverlay: false
+    };
+  },
   methods: {
     async updateSale() {
       try {
         const response = await fetch(`https://com.servhub.fr/api/sales/${this.sale._id}`, {
-          method: 'PUT',
+          method: "PUT",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json"
           },
-          body: JSON.stringify(this.sale),
+          body: JSON.stringify(this.sale)
         });
 
         if (response.ok) {
           const updatedSale = await response.json();
-          this.$emit('updateSale', updatedSale); // Emit the updated sale to the parent component
+          this.$emit("updateSale", updatedSale);
           alert(`Sale "${this.sale.reference}" updated successfully!`);
           this.closeOverlay();
         } else {
@@ -92,18 +101,29 @@ export default {
           alert(`Error updating sale: ${errorData.message}`);
         }
       } catch (error) {
-        console.error('Error updating sale:', error);
-        alert('An error occurred while updating the sale.');
+        console.error("Error updating sale:", error);
+        alert("An error occurred while updating the sale.");
       }
     },
+    openClientOverlay() {
+      this.showClientOverlay = true;
+    },
+    closeClientOverlay() {
+      this.showClientOverlay = false;
+    },
+    updateClientData(updatedClient) {
+      this.sale.customer = updatedClient;
+      this.closeClientOverlay();
+    },
     closeOverlay() {
-      this.$emit('closeOverlay');
+      this.$emit("closeOverlay");
     }
   }
 };
 </script>
 
 <style scoped>
+/* Overlay styling */
 .overlay {
   position: fixed;
   top: 0;
@@ -119,25 +139,56 @@ export default {
 
 .overlay-content {
   background: white;
-  padding: 20px;
+  padding: 25px;
   border-radius: 20px;
-  width: 400px;
+  width: 450px;
   max-width: 90%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Form group styling */
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
   font-weight: bold;
+  color: #333;
 }
 
-.form-group input,
-.form-group select {
+.customer-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.customer-name {
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+/* Modify Customer Button */
+.modify-client-btn {
+  padding: 8px 15px;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.modify-client-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Input fields styling */
+input[type="text"],
+input[type="number"],
+select {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
@@ -145,10 +196,15 @@ export default {
   font-size: 16px;
 }
 
+/* Button styling */
+.button-group {
+  display: flex;
+  justify-content: space-between;
+}
+
 .submit-btn,
 .close-btn {
-  margin-top: 10px;
-  padding: 10px;
+  padding: 10px 20px;
   background-color: #4CAF50;
   border: none;
   color: white;
@@ -169,4 +225,4 @@ export default {
 .submit-btn:hover {
   background-color: #45a049;
 }
-</style>S
+</style>

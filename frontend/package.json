@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@paypal/paypal-js": "^8.1.2",
     "vue": "^3.5.8",
     "vue-router": "^4.4.5",
     "vuex": "^4.1.0",
