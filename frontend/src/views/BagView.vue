@@ -62,12 +62,13 @@ export default {
   data() {
     return {
       cartProducts: [],
-      taxRate: 0.15, // Example tax rate
+      taxRate: 0.0725, // Example tax rate
       showClientSearch: false,
       client: undefined,
       clientName: "Identity your client",
       paymentStatus: "", // Updated payment status from PayPal
       paymentMethod: "PayPal", // We will use PayPal Sandbox
+      paymentID: "",
     };
   },
   computed: {
@@ -115,8 +116,12 @@ export default {
           await this.$store.dispatch("handleReceipt", { payload: product.product, number: product.quantity });
         }
 
+        this.$store.commit("removeAllFromCart");
+        this.$router.push({name: "Sale"});
+
         const products = this.cartProducts.map(product => ({
           SKU: product.product.SKU,
+          name: product.product.name,
           quantity: product.quantity,
           price_per_unit: product.product.price
         }));
@@ -150,23 +155,27 @@ export default {
             invoice_date: new Date().toISOString().split("T")[0],
             note: "Thank you for your purchase.",
             payment_term: {
-              term_type: "NET_10",
-              due_date: new Date(new Date().setDate(new Date().getDate() + 10)).toISOString().split("T")[0]
+              term_type: "NO_DUE_DATE",  // No due date as the invoice is already paid
+            },
+            payment_detail: {
+              type: "PAYPAL",  // Mark as paid via PayPal
+              transaction_id: this.payementID,
+              method: "PayPal" // Add any method you want here
             }
           },
           invoicer: {
             name: {
-              given_name: "YourCompany",
-              surname: "Name"
+              given_name: "RetailHub Corporation",
+              surname: "RetailHub"
             },
             address: {
-              address_line_1: "YourCompany Address",
-              admin_area_2: "YourCity",
-              admin_area_1: "YourState",
-              postal_code: "YourPostalCode",
+              address_line_1: "777 boulevard Robert Bourassa",
+              admin_area_2: "Montréal",
+              admin_area_1: "Québec",
+              postal_code: "H3C 3Z7",
               country_code: "CA"
             },
-            email_address: "yourcompany@example.com"
+            email_address: "sb-qglh933109622@business.example.com"
           },
           primary_recipients: [
             {
@@ -176,18 +185,18 @@ export default {
                   surname: this.client.lastName
                 },
                 address: {
-                  address_line_1: addressLine1,  // The street address from the split
-                  admin_area_2: city,            // The city from the split
-                  admin_area_1: state,           // The state from the split
-                  postal_code: postalCode,       // The postal code from the split
-                  country_code: "CA"          // The country code from the split
+                  address_line_1: addressLine1,
+                  admin_area_2: city,
+                  admin_area_1: state,
+                  postal_code: postalCode,
+                  country_code: "CA"
                 },
                 email_address: this.client.email
               }
             }
           ],
           items: products.map(product => ({
-            name: product.SKU,  // Ensure this field is present
+            name: product.name,
             description: product.Details || "Product",
             quantity: product.quantity,
             unit_amount: {
@@ -196,11 +205,36 @@ export default {
             },
             tax: {
               name: "Sales Tax",
+              amount: {
+                currency_code: "CAD",
+                value: ((product.price_per_unit * product.quantity) * 0.0725).toFixed(2) // Tax value for each item
+              },
               percent: "7.25"
             }
-          }))
+          })),
+          amount: {
+            breakdown: {
+              item_total: {
+                currency_code: "CAD",
+                value: this.subtotal
+              },
+              tax_total: {
+                currency_code: "CAD",
+                value: products.reduce((sum, product) => {
+                  return sum + ((product.price_per_unit * product.quantity) * 0.0725);
+                }, 0).toFixed(2) // Sum up tax for each product
+              }
+            },
+            total: {
+              currency_code: "CAD",
+              value: this.total
+            },
+            paid_amount: {  // Specify that the full amount has been paid
+              currency_code: "CAD",
+              value: this.total  // Mark the total as the paid amount
+            }
+          }
         };
-        console.log("ACCESS TOKEN : ", accessToken);
         const invoiceResponse = await fetch('https://api-m.sandbox.paypal.com/v2/invoicing/invoices', {
           method: 'POST',
           headers: {
@@ -212,7 +246,7 @@ export default {
 
         const invoiceResult = await invoiceResponse.json();
         console.log("Invoice created:", invoiceResult);
-        console.log("OK? :", invoiceResponse.ok);
+
         if (invoiceResult.href) {
           // Step 3: Fetch Invoice Details using the self link
           const invoiceDetailsResponse = await fetch(invoiceResult.href, {
@@ -224,16 +258,22 @@ export default {
             });
 
             const invoiceDetails = await invoiceDetailsResponse.json();
-            console.log("Invoice details:", invoiceDetails);
+
+            const sendInvoiceResponse = await fetch(`https://api-m.sandbox.paypal.com/v2/invoicing/invoices/${invoiceDetails.id}/send`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+              }
+            });
+            const sendInvoiceResult = await sendInvoiceResponse.json();
+            console.log("Invoice sent:", sendInvoiceResult);
 
             // Step 4: Open recipient view URL
             const invoiceMetadata = invoiceDetails.detail.metadata;
             const recipientViewURL = invoiceMetadata.recipient_view_url;
-            console.log("LINKS : ", invoiceDetails.links);
             console.log("Recipient : ", recipientViewURL);
-            if (recipientViewURL) {
-              window.open(recipientViewURL, "_blank");  // Open the invoice in a new tab
-            }
+            window.open(recipientViewURL);
         }
 
       } catch (error) {
@@ -307,7 +347,9 @@ export default {
             });
           },
           onApprove: (data, actions) => {
+            console.log("DATA : ", data);
             return actions.order.capture().then(details => {
+              this.payementID = data.paymentID;
               this.paymentStatus = "Completed"; // Mettre à jour le statut du paiement
               console.log("Transaction effectuée par " + details.payer.name.given_name);
               this.transferInvoice();

@@ -1,6 +1,5 @@
 <template>
   <div class="chart-container">
-    <button @click="InitChart">Appuie</button>
     <div class="chart-wrapper">
       <canvas ref="chart"></canvas>
     </div>
@@ -11,6 +10,17 @@
 <script>
 import { Chart } from 'chart.js/auto';
 export default {
+  props: {
+    years: {
+      type: Boolean
+    },
+    months: {
+      type: Boolean
+    },
+    weeks: {
+      type: Boolean
+    },
+  },
   data() {
     return {
       chartLabel : [],
@@ -19,12 +29,10 @@ export default {
     }
   },
   mounted() {
-    this.fetchData(false, false, true);
-
-
-
-
-
+    this.fetchData(this.years, this.months, this.weeks);
+    setTimeout(() => {
+      this.InitChart();
+    },1000);
   },
   methods:{
 

@@ -52,6 +52,7 @@ export default {
                 const customer = await this.fetchCustomer(sale.customer_id);
                 return {
                   _id: sale._id,
+                  sale: sale,
                   customer: customer,
                   total_price: sale.total_price,
                   reference: `I-${sale._id.substring(0, 8)}`,

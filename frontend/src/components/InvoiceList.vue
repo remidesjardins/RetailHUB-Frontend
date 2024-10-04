@@ -13,13 +13,17 @@
           <p class="total-price">{{ sale.total_price }} €</p>
           <p class="sale-reference">{{ sale.reference }}</p>
 
-          <!-- Buttons for Update and Delete -->
+          <!-- Buttons for Update, Delete, and Generate Invoice -->
           <div class="card-actions">
             <button @click="updateSale(sale)" class="action-btn update-btn">
               <i class="fa fa-pencil-alt"></i>
             </button>
             <button @click="deleteSale(sale._id)" class="action-btn delete-btn">
               <i class="fa fa-trash"></i>
+            </button>
+            <!-- New button for generating invoice -->
+            <button @click="generateInvoice(sale)" class="action-btn invoice-btn">
+              <i class="fa fa-file-invoice"></i>
             </button>
           </div>
         </template>
@@ -58,7 +62,7 @@ export default {
   },
   methods: {
     handleCustomerName(customer) {
-      console.log("CUSTOMER TA MERE :", customer);
+      console.log("CUSTOMER :", customer);
     },
     // Placeholder methods for updating and deleting sales
     updateSale(sale) {
@@ -88,8 +92,203 @@ export default {
         }
       }
     },
+    // New method to generate and send an invoice for a sale
+    async getAccessToken() {
+      const clientID = "AZARWGYIQ1t8j1JqA2s-3G4ttRXc-uivXrk31VcVFnuQHMADwtmhEHRaHe7F_WAgZbp5UZO7mnnvPHyM";
+      const clientSecret = "ELZfZJzG29tgQBnF5bRY5u__o9Tq54KLzO1lGQcoPnAKsgsHpsCgdMcke2P5f7Z3m2QDggVgE2seU0X6";
+
+      const credentials = btoa(`${clientID}:${clientSecret}`);
+      const response = await fetch("https://api-m.sandbox.paypal.com/v1/oauth2/token", {
+        method: "POST",
+        headers: {
+          "Authorization": `Basic ${credentials}`,
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: "grant_type=client_credentials"
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        return data.access_token;
+      } else {
+        throw new Error("Unable to fetch PayPal access token");
+      }
+    },
+    async generateInvoice(sale) {
+      try {
+        if (!sale.sale.products || !sale.customer) {
+          console.error("Sale does not have products or customer information.", sale);
+          return;
+        }
+
+        const accessToken = await this.getAccessToken();
+
+        // Split customer address
+        const addressParts = sale.customer.address.split(",");
+        const addressLine1 = addressParts[0]?.trim() || "";
+        const city = addressParts[1]?.trim() || "";
+        const state = addressParts[2]?.trim() || "";
+        const postalCode = addressParts[3]?.trim() || "";
+        const country = addressParts[4]?.trim() || "CA"; // Default country is Canada (CA)
+
+        // Fetch complete product details for each product in the sale
+        const items = await Promise.all(sale.sale.products.map(async (product) => {
+          console.log(product.SKU);
+          const productDetails = await this.fetchProduct(product.SKU); // Fetch product details by SKU
+          console.log(productDetails);
+          return {
+            name: productDetails.name || "Unnamed product", // Use the fetched product name
+            description: productDetails.Details || "Product description",
+            quantity: product.quantity || 1, // Use the sale quantity
+            unit_amount: {
+              currency_code: "CAD",
+              value: product.price_per_unit || 0 // Use the fetched product price
+            },
+            tax: {
+              name: "Sales Tax",
+              amount: {
+                currency_code: "CAD",
+                value: ((product.price_per_unit * product.quantity) * 0.0725).toFixed(2) // Tax calculation
+              },
+              percent: "7.25" // Tax percentage
+            }
+          };
+        }));
+
+        // Calculate item and tax totals
+        const tax_total = items.reduce((sum, product) => sum + parseFloat(product.tax.amount.value), 0).toFixed(2);
+        const item_total = items.reduce((sum, product) => sum + (product.unit_amount.value * product.quantity), 0).toFixed(2);
+
+        // Create the invoice payload
+        const invoicePayload = {
+          detail: {
+            currency_code: "CAD",
+            invoice_number: `INV-${new Date().getTime()}`,
+            reference: sale.reference || `REF-${new Date().getTime()}`,
+            invoice_date: new Date().toISOString().split("T")[0],
+            note: "Thank you for your purchase.",
+            payment_term: {
+              term_type: "NO_DUE_DATE",
+            },
+            payment_detail: {
+              type: "PAYPAL",
+              transaction_id: sale.id || "sampleTransactionID",
+              method: "PayPal"
+            }
+          },
+          invoicer: {
+            name: {
+              given_name: "RetailHub Corporation",
+              surname: "RetailHub"
+            },
+            address: {
+              address_line_1: "777 boulevard Robert Bourassa",
+              admin_area_2: "Montréal",
+              admin_area_1: "Québec",
+              postal_code: "H3C 3Z7",
+              country_code: "CA"
+            },
+            email_address: "sb-qglh933109622@business.example.com"
+          },
+          primary_recipients: [
+            {
+              billing_info: {
+                name: {
+                  given_name: sale.customer.firstName,
+                  surname: sale.customer.lastName
+                },
+                address: {
+                  address_line_1: addressLine1,
+                  admin_area_2: city,
+                  admin_area_1: state,
+                  postal_code: postalCode,
+                  country_code: country
+                },
+                email_address: sale.customer.email
+              }
+            }
+          ],
+          items,
+          amount: {
+            breakdown: {
+              item_total: {
+                currency_code: "CAD",
+                value: item_total // Item total calculation
+              },
+              tax_total: {
+                currency_code: "CAD",
+                value: tax_total // Tax total calculation
+              }
+            },
+            total: {
+              currency_code: "CAD",
+              value: sale.total_price || (parseFloat(item_total) + parseFloat(tax_total)).toFixed(2)
+            },
+            paid_amount: {
+              currency_code: "CAD",
+              value: sale.total_price || (parseFloat(item_total) + parseFloat(tax_total)).toFixed(2) // Mark total as paid
+            }
+          }
+        };
+
+        // Send the request to PayPal to create the invoice
+        const invoiceResponse = await fetch('https://api-m.sandbox.paypal.com/v2/invoicing/invoices', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(invoicePayload)
+        });
+
+        const invoiceResult = await invoiceResponse.json();
+        console.log("Invoice created:", invoiceResult);
+
+        if (invoiceResult.href) {
+          const invoiceDetailsResponse = await fetch(invoiceResult.href, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${accessToken}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          const invoiceDetails = await invoiceDetailsResponse.json();
+          console.log("Invoice details:", invoiceDetails);
+          const sendInvoiceResponse = await fetch(`https://api-m.sandbox.paypal.com/v2/invoicing/invoices/${invoiceDetails.id}/send`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${accessToken}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          const sendInvoiceResult = await sendInvoiceResponse.json();
+          console.log("Invoice sent:", sendInvoiceResult);
+
+          const recipientViewURL = invoiceDetails.detail.metadata.recipient_view_url;
+          if (recipientViewURL) {
+            window.open(recipientViewURL); // Open the invoice in a new tab
+          }
+        }
+      } catch (error) {
+        console.error("Error generating invoice:", error);
+      }
+    },
+    async fetchProduct(SKU) {
+      try {
+        const response = await fetch(`https://com.servhub.fr/api/products/${SKU}`);
+        if (!response.ok) {
+          throw new Error(`Product with SKU: ${SKU} not found.`);
+        }
+        console.log(response.body);
+        return await response.json(); // Return the product details
+      } catch (error) {
+        console.error(`Error fetching product with SKU: ${SKU}`, error);
+        throw error;
+      }
+    },
   },
-}
+};
 </script>
 
 <style scoped>
@@ -168,5 +367,13 @@ export default {
   color: red;
   text-align: center;
   margin-top: 40px;
+}
+
+.invoice-btn {
+  color: #3b5998; /* Blue color for generating invoice */
+}
+
+.invoice-btn:hover {
+  background-color: rgba(0, 0, 255, 0.1); /* Hover effect */
 }
 </style>

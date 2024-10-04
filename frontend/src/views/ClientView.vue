@@ -85,6 +85,7 @@ export default {
                 if (sale.customer_id === this.clientId) {
                   return {
                     _id: sale._id,
+                    sale: sale,
                     customer: this.client,
                     total_price: sale.total_price,
                     reference: `I-${sale._id.substring(0, 8)}`,
