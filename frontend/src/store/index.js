@@ -64,6 +64,7 @@ const store = createStore({
         async handleReceipt(context, {payload, number}) {
             try {
                 console.log("SKU: ", payload)
+                console.log("Number: ", number)
                 // Fetch the current stock level from the database
                 const response = await fetch(`https://com.servhub.fr/api/products/${payload.SKU}`);
                 const product = await response.json();

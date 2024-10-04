@@ -40,8 +40,8 @@
               <p>Tax: {{ tax }} $</p>
               <h2>Total: {{ total }} $</h2>
             </div>
-            <div id="paypal-button-container"></div>
-            <button @click="transferInvoice">Transfer the invoice</button>
+            <div id="paypal-button-container" v-show="clientName !== 'Identity your client'"></div>
+            <button @click="transferInvoice" v-show="false">Transfer the invoice</button>
           </div>
         </div>
       </div>
@@ -99,11 +99,11 @@ export default {
     loadCartProducts() {
       this.cartProducts = this.$store.state.bagContents.reverse();
     },
-    transferInvoice() {
-      this.cartProducts.forEach(product => {
+    async transferInvoice() {
+      for (const product of this.cartProducts) {
         console.log("PayPal Product", product);
-        this.$store.dispatch("handleReceipt", {payload: product, number: product.quantity});
-      })
+        await this.$store.dispatch("handleReceipt", {payload: product.product, number: product.quantity});
+      }
 
       const products = this.cartProducts.map(product => ({
         SKU: product.product.SKU,
@@ -123,7 +123,7 @@ export default {
       });
 
       fetch("https://com.servhub.fr/api/sales/", {
-        headers: { "Content-Type": "application/json" },
+        headers: {"Content-Type": "application/json"},
         method: "POST",
         body: row,
         redirect: "follow"
@@ -392,6 +392,7 @@ button:hover {
   border-radius: 15px;
   display: flex;
   flex-direction: column;
+  overflow: scroll;
   justify-content: space-between; /* S'assure que les éléments de la section récapitulative sont bien espacés */
 }
 </style>
