@@ -69,7 +69,6 @@ export default {
       fetch(`https://com.servhub.fr/api/customers/${this.clientId}`, requestOptions)
           .then((response) => response.json())
           .then((result) => {
-            console.log(result);
             this.client = result;
           })
           .catch((error) => console.error(error));

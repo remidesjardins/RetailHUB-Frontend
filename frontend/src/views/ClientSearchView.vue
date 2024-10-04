@@ -122,7 +122,6 @@ export default {
       fetch("https://com.servhub.fr/api/customers/", requestOptions)
           .then((response) => response.json())
           .then((result) => {
-            console.log(result);
             this.clients = result;
           })
           .catch((error) => console.error(error));
@@ -145,7 +144,6 @@ export default {
       this.showCreateClient = false;
     },
     goToClientPage(clientId) {
-      console.log("Client :", clientId);
       this.$router.push(`/client/${clientId}`);
     },
   },

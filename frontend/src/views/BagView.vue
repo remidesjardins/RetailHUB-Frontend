@@ -100,43 +100,170 @@ export default {
       this.cartProducts = this.$store.state.bagContents.reverse();
     },
     async transferInvoice() {
-      for (const product of this.cartProducts) {
-        console.log("PayPal Product", product);
-        await this.$store.dispatch("handleReceipt", {payload: product.product, number: product.quantity});
+      try {
+        const accessToken = await this.getAccessToken(); // Await the access token retrieval
+        // Split the client address string into its components
+        const addressParts = this.client.address.split(","); // Assuming your format is "Street, City, State, PostalCode, Country"
+        const addressLine1 = addressParts[0] ? addressParts[0].trim() : "";
+        const city = addressParts[1] ? addressParts[1].trim() : "";
+        const state = addressParts[2] ? addressParts[2].trim() : "";
+        const postalCode = addressParts[3] ? addressParts[3].trim() : "";
+        const country = addressParts[4] ? addressParts[4].trim() : "";
+
+        // Step 1: Send the sale data to your server
+        for (const product of this.cartProducts) {
+          await this.$store.dispatch("handleReceipt", { payload: product.product, number: product.quantity });
+        }
+
+        const products = this.cartProducts.map(product => ({
+          SKU: product.product.SKU,
+          quantity: product.quantity,
+          price_per_unit: product.product.price
+        }));
+
+        const total_price = this.total;
+        const client_name = this.client.firstName + " " + this.client.lastName;
+
+        const saleResponse = await fetch("https://com.servhub.fr/api/sales/", {
+          headers: { "Content-Type": "application/json" },
+          method: "POST",
+          body: JSON.stringify({
+            products,
+            total_price,
+            customer_id: this.client._id,
+            payment_status: this.paymentStatus,
+            payment_method: this.paymentMethod,
+            soldBy: "66fdffb56790cc1514a6a267"
+          }),
+          redirect: "follow"
+        });
+
+        const saleResult = await saleResponse.json();
+        console.log("Sale created:", saleResult);
+
+        // Step 2: Generate PayPal Invoice after payment is confirmed
+        const invoicePayload = {
+          detail: {
+            currency_code: "CAD",
+            invoice_number: `INV-${new Date().getTime()}`,
+            reference: "order-ref",
+            invoice_date: new Date().toISOString().split("T")[0],
+            note: "Thank you for your purchase.",
+            payment_term: {
+              term_type: "NET_10",
+              due_date: new Date(new Date().setDate(new Date().getDate() + 10)).toISOString().split("T")[0]
+            }
+          },
+          invoicer: {
+            name: {
+              given_name: "YourCompany",
+              surname: "Name"
+            },
+            address: {
+              address_line_1: "YourCompany Address",
+              admin_area_2: "YourCity",
+              admin_area_1: "YourState",
+              postal_code: "YourPostalCode",
+              country_code: "CA"
+            },
+            email_address: "yourcompany@example.com"
+          },
+          primary_recipients: [
+            {
+              billing_info: {
+                name: {
+                  given_name: this.client.firstName,
+                  surname: this.client.lastName
+                },
+                address: {
+                  address_line_1: addressLine1,  // The street address from the split
+                  admin_area_2: city,            // The city from the split
+                  admin_area_1: state,           // The state from the split
+                  postal_code: postalCode,       // The postal code from the split
+                  country_code: "CA"          // The country code from the split
+                },
+                email_address: this.client.email
+              }
+            }
+          ],
+          items: products.map(product => ({
+            name: product.SKU,  // Ensure this field is present
+            description: product.Details || "Product",
+            quantity: product.quantity,
+            unit_amount: {
+              currency_code: "CAD",
+              value: product.price_per_unit
+            },
+            tax: {
+              name: "Sales Tax",
+              percent: "7.25"
+            }
+          }))
+        };
+        console.log("ACCESS TOKEN : ", accessToken);
+        const invoiceResponse = await fetch('https://api-m.sandbox.paypal.com/v2/invoicing/invoices', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(invoicePayload)
+        });
+
+        const invoiceResult = await invoiceResponse.json();
+        console.log("Invoice created:", invoiceResult);
+        console.log("OK? :", invoiceResponse.ok);
+        if (invoiceResult.href) {
+          // Step 3: Fetch Invoice Details using the self link
+          const invoiceDetailsResponse = await fetch(invoiceResult.href, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${accessToken}`,
+              'Content-Type': 'application/json'
+            }
+            });
+
+            const invoiceDetails = await invoiceDetailsResponse.json();
+            console.log("Invoice details:", invoiceDetails);
+
+            // Step 4: Open recipient view URL
+            const invoiceMetadata = invoiceDetails.detail.metadata;
+            const recipientViewURL = invoiceMetadata.recipient_view_url;
+            console.log("LINKS : ", invoiceDetails.links);
+            console.log("Recipient : ", recipientViewURL);
+            if (recipientViewURL) {
+              window.open(recipientViewURL, "_blank");  // Open the invoice in a new tab
+            }
+        }
+
+      } catch (error) {
+        console.error("Error creating invoice:", error);
       }
+    },
+    async getAccessToken() {
+      const clientID = "AZARWGYIQ1t8j1JqA2s-3G4ttRXc-uivXrk31VcVFnuQHMADwtmhEHRaHe7F_WAgZbp5UZO7mnnvPHyM";  // Replace with your actual sandbox client ID
+      const clientSecret = "ELZfZJzG29tgQBnF5bRY5u__o9Tq54KLzO1lGQcoPnAKsgsHpsCgdMcke2P5f7Z3m2QDggVgE2seU0X6";  // Replace with your actual sandbox client secret
 
-      const products = this.cartProducts.map(product => ({
-        SKU: product.product.SKU,
-        quantity: product.quantity,
-        price_per_unit: product.product.price
-      }));
+      const credentials = btoa(`${clientID}:${clientSecret}`); // Base64 encode the client ID and secret
 
-      const total_price = this.total;
-
-      const row = JSON.stringify({
-        products: products,
-        total_price: total_price,
-        customer_id: this.client._id,
-        payment_status: this.paymentStatus,
-        payment_method: this.paymentMethod,
-        soldBy: "66fdffb56790cc1514a6a267"
+      const response = await fetch("https://api-m.sandbox.paypal.com/v1/oauth2/token", {
+        method: "POST",
+        headers: {
+          "Authorization": `Basic ${credentials}`,
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: "grant_type=client_credentials"
       });
 
-      fetch("https://com.servhub.fr/api/sales/", {
-        headers: {"Content-Type": "application/json"},
-        method: "POST",
-        body: row,
-        redirect: "follow"
-      })
-          .then(response => response.json())
-          .then(result => {
-            console.log(result);
-            this.$router.push({name: "Sale"});
-            this.$store.commit("removeAllFromCart");
-          })
-          .catch(error => {
-            console.error('Erreur lors de la création de la facture:', error);
-          });
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log(data.access_token);
+        return data.access_token;
+      } else {
+        console.error('Error fetching access token:', data);
+        throw new Error("Unable to fetch PayPal access token");
+      }
     },
     deleteProductFromCart(product) {
       this.$store.dispatch("removeFromCartAndHandleReceipt", product);

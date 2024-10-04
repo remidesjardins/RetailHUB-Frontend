@@ -49,7 +49,6 @@ export default {
   computed: {
     filteredProducts() {
       if (this.searchQuery.trim() === "") {
-        console.log(this.products);
         return this.products; // If no search query, return all books
       }
       return this.products.filter(product => {
@@ -67,7 +66,6 @@ export default {
   },
   methods: {
     fetchInitialProducts() {
-      console.log("NOW");
       fetch('https://com.servhub.fr/api/products')
           .then(response => {
             if (!response.ok) {
@@ -85,10 +83,8 @@ export default {
     updateProducts(productList) {
       this.products = productList;
       this.isEmpty = productList.length === 0;
-      console.log("FDFSJF: ", this.products);
     },
     showProductDetailsOverlay(product) {
-      console.log('Displaying product details:', product); // Check if this is logged
       this.selectedProduct = product; // Set the selected product
       this.showProductDetails = true; // Show the overlay
     },

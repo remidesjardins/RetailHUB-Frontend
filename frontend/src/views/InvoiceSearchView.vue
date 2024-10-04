@@ -59,7 +59,6 @@ export default {
               })
           );
           this.filteredSales = this.sales; // Initially, show all sales
-          console.log("FilteredSales : ", this.sales);
         }
       } catch (error) {
         console.error('Error fetching sales:', error);
@@ -80,7 +79,6 @@ export default {
       try {
         const response = await fetch(`https://com.servhub.fr/api/customers/${customer_id}`);
         const customerData = await response.json();
-        console.log(customerData);
         return customerData;
       } catch (error) {
         console.error('Error fetching customer details:', error);

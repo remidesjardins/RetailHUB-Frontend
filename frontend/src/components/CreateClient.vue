@@ -10,10 +10,14 @@
         </div>
         <div class="form-group">
           <input type="text" placeholder="Phone Number" v-model="client.phoneNumber" required />
-          <input type="email" placeholder="Email" v-model="client.email" required />
+          <input type="email" placeholder="Email" v-model="client.email" class="full-width" required />
         </div>
-        <div class="form-group">
-          <textarea placeholder="Adress" v-model="client.address" required></textarea>
+        <div class="form-group form-group-address">
+          <input type="text" placeholder="Street" v-model="client.addressLine1" required />
+          <input type="text" placeholder="City" v-model="client.city" required />
+          <input type="text" placeholder="State" v-model="client.state" required />
+          <input type="text" placeholder="Postal Code" v-model="client.postalCode" required />
+          <input type="text" placeholder="Country" v-model="client.country" class="full-width" required />
         </div>
         <button type="submit" class="create-client-button" @click="createClient">Create client</button>
       </form>
@@ -30,7 +34,11 @@ export default {
         firstName: '',
         phoneNumber: '',
         email: '',
-        address: ''
+        addressLine1: '',
+        city: '',
+        state: '',
+        postalCode: '',
+        country: ''
       }
     };
   },
@@ -47,12 +55,15 @@ export default {
       myHeaders.append("Content-Type", "application/json");
 
       const name = this.client.firstName + " " + this.client.lastName;
+      const fullAddress = `${this.client.addressLine1}, ${this.client.city}, ${this.client.state}, ${this.client.postalCode}, ${this.client.country}`;
+
       const row = JSON.stringify({
         name: name,
         email: this.client.email,
         phone: this.client.phoneNumber,
-        address: this.client.address
+        address: fullAddress // Combine all address fields into one string
       });
+
       const requestOptions = {
         headers: myHeaders,
         method: "POST",
@@ -64,6 +75,7 @@ export default {
           .then((response) => response.json())
           .then((result) => console.log(result))
           .catch((error) => console.error(error));
+
       this.$emit('close');
     },
   }
@@ -88,7 +100,7 @@ export default {
   background-color: white;
   padding: 20px;
   border-radius: 10px;
-  width: 400px;
+  width: 450px;
   position: relative;
 }
 
@@ -105,25 +117,22 @@ export default {
 h1 {
   font-size: 24px;
   margin-bottom: 20px;
+  text-align: center;
 }
 
 .form-group {
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  gap: 15px;
   margin-bottom: 20px;
 }
 
 input, textarea {
-  flex: 1;
+  width: 100%;
   padding: 10px;
   border: 2px solid #ccc;
   border-radius: 5px;
   font-size: 16px;
-}
-
-textarea {
-  resize: none;
-  height: 100px;
 }
 
 .create-client-button {
@@ -140,5 +149,21 @@ textarea {
 
 .create-client-button:hover {
   background-color: #88b3b1;
+}
+
+/* Style for address input fields */
+.form-group-address {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+input {
+  box-sizing: border-box;
+}
+
+/* Making sure the full width inputs (email, etc.) stretch the whole width */
+.full-width {
+  grid-column: span 2;
 }
 </style>
