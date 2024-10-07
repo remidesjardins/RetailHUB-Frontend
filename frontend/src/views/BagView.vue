@@ -1,31 +1,64 @@
+<!--
+ * RetailHub - BagView.vue
+ *
+ * Participants:
+ * - Alexandre Borny
+ * - Maël Castellan
+ * - Laura Donato
+ * - Rémi Desjardins
+ *
+ * This component manages the shopping bag view in RetailHub,
+ * allowing users to view, modify, and proceed with their cart items.
+ * It also handles client selection and integrates PayPal for payments.
+ -->
+
 <template>
   <div class="home-container">
+    <!-- Client Search Overlay for selecting or modifying client details -->
     <ClientSearchOverlay
         v-if="showClientSearch"
         @close="closeClientOverlay"
         @close-data="closeClientOverlayWithData"
     />
+
+    <!-- Navigation Bar -->
     <NavBar class="navbar"></NavBar>
+
     <div class="content">
       <div class="cart-page">
         <div class="cart-container">
+          <!-- Shopping Bag Section -->
           <div class="bag">
             <h2>Bag</h2>
-            <!-- Transition group to handle removal animation -->
+            <!-- Transition group to handle removal animation of cart items -->
             <transition-group name="snap" tag="div">
-              <div v-for="(product, index) in cartProducts.slice()" :key="index" class="cart-item">
+              <div
+                  v-for="(product, index) in cartProducts.slice()"
+                  :key="index"
+                  class="cart-item"
+              >
+                <!-- Product Image -->
                 <img :src="product.product.Image" alt="Product image" />
+
                 <div class="item-details">
                   <div class="details-left">
+                    <!-- Product Name -->
                     <h3>{{ product.product.name }}</h3>
+                    <!-- Product SKU -->
                     <p>{{ product.product.SKU }}</p>
                   </div>
+
+                  <!-- Quantity Selector -->
                   <div class="quantity-selector">
                     <button @click="decreaseQuantity(index, product)">-</button>
                     <span>{{ product.quantity }}</span>
                     <button @click="increaseQuantity(index, product)">+</button>
                   </div>
-                  <span>{{ (product.product.price * product.quantity).toFixed(2) }} $
+
+                  <!-- Total Price for the Product -->
+                  <span>
+                    {{ (product.product.price * product.quantity).toFixed(2) }} $
+                    <!-- Trash Icon to Remove Product from Cart -->
                     <i class="fa-solid fa-trash" @click="deleteProductFromCart(product)"></i>
                   </span>
                 </div>
@@ -33,14 +66,24 @@
             </transition-group>
           </div>
 
+          <!-- Summary Section -->
           <div class="summary">
-            <button @click="openClientOverlay">{{ this.clientName }}</button>
+            <!-- Button to Open Client Overlay for Client Selection/Modification -->
+            <button @click="openClientOverlay">{{ clientName }}</button>
+
             <div class="totals">
+              <!-- Display Sub-total -->
               <p>Sub-total: {{ subtotal }} $</p>
+              <!-- Display Tax -->
               <p>Tax: {{ tax }} $</p>
+              <!-- Display Total Amount -->
               <h2>Total: {{ total }} $</h2>
             </div>
+
+            <!-- PayPal Button Container, visible only when a client is identified -->
             <div id="paypal-button-container" v-show="clientName !== 'Identity your client'"></div>
+
+            <!-- Button to Transfer Invoice (Currently Hidden) -->
             <button @click="transferInvoice" v-show="false">Transfer the invoice</button>
           </div>
         </div>
@@ -52,26 +95,66 @@
 <script>
 import NavBar from "@/components/NavBar.vue";
 import ClientSearchOverlay from "@/components/ClientSearchOverlay.vue";
-import { loadScript } from "@paypal/paypal-js"; // SDK PayPal
+import { loadScript } from "@paypal/paypal-js"; // PayPal SDK
 
 export default {
   components: {
     NavBar,
     ClientSearchOverlay,
   },
+
   data() {
     return {
+      /**
+       * Array of products in the shopping cart.
+       * Each product includes product details and quantity.
+       */
       cartProducts: [],
-      taxRate: 0.0725, // Example tax rate
+
+      /**
+       * Tax rate applied to the subtotal.
+       * Example: 7.25% tax rate.
+       */
+      taxRate: 0.0725,
+
+      /**
+       * Flag to control the visibility of the client search overlay.
+       */
       showClientSearch: false,
+
+      /**
+       * Object containing client details.
+       */
       client: undefined,
+
+      /**
+       * Name of the client. Defaults to prompting user to identify the client.
+       */
       clientName: "Identity your client",
-      paymentStatus: "", // Updated payment status from PayPal
-      paymentMethod: "PayPal", // We will use PayPal Sandbox
+
+      /**
+       * Status of the payment (e.g., "Completed", "Failed").
+       */
+      paymentStatus: "",
+
+      /**
+       * Payment method used. Currently set to "PayPal".
+       */
+      paymentMethod: "PayPal",
+
+      /**
+       * PayPal payment ID received after a successful transaction.
+       */
       paymentID: "",
     };
   },
+
   computed: {
+    /**
+     * Calculates the subtotal of all products in the cart.
+     *
+     * @returns {string} - The subtotal amount formatted to two decimal places.
+     */
     subtotal() {
       let total = 0;
       this.cartProducts.forEach(productOrList => {
@@ -83,42 +166,69 @@ export default {
           });
         } else {
           if (productOrList.product.price) {
-            total += parseFloat(productOrList.quantity) *  parseFloat(productOrList.product.price);
+            total += parseFloat(productOrList.quantity) * parseFloat(productOrList.product.price);
           }
         }
       });
       return total.toFixed(2);
     },
+
+    /**
+     * Calculates the tax based on the subtotal and tax rate.
+     *
+     * @returns {string} - The tax amount formatted to two decimal places.
+     */
     tax() {
       return (this.subtotal * this.taxRate).toFixed(2);
     },
+
+    /**
+     * Calculates the total amount including tax.
+     *
+     * @returns {string} - The total amount formatted to two decimal places.
+     */
     total() {
       return (parseFloat(this.subtotal) + parseFloat(this.tax)).toFixed(2);
     }
   },
+
   methods: {
+    /**
+     * Loads the cart products from the Vuex store and reverses the order.
+     */
     loadCartProducts() {
       this.cartProducts = this.$store.state.bagContents.reverse();
     },
+
+    /**
+     * Transfers the invoice by creating a sale record and generating a PayPal invoice.
+     * Handles the entire process of payment and invoice generation.
+     */
     async transferInvoice() {
       try {
-        const accessToken = await this.getAccessToken(); // Await the access token retrieval
-        // Split the client address string into its components
-        const addressParts = this.client.address.split(","); // Assuming your format is "Street, City, State, PostalCode, Country"
+        // Retrieve PayPal access token
+        const accessToken = await this.getAccessToken();
+
+        // Split the client address into components
+        const addressParts = this.client.address.split(","); // Format: "Street, City, State, PostalCode, Country"
         const addressLine1 = addressParts[0] ? addressParts[0].trim() : "";
         const city = addressParts[1] ? addressParts[1].trim() : "";
         const state = addressParts[2] ? addressParts[2].trim() : "";
         const postalCode = addressParts[3] ? addressParts[3].trim() : "";
         const country = addressParts[4] ? addressParts[4].trim() : "";
 
-        // Step 1: Send the sale data to your server
+        // Step 1: Send the sale data to the server for each product
         for (const product of this.cartProducts) {
           await this.$store.dispatch("handleReceipt", { payload: product.product, number: product.quantity });
         }
 
+        // Clear the cart after processing
         this.$store.commit("removeAllFromCart");
-        this.$router.push({name: "Sale"});
 
+        // Redirect to the Sale page
+        this.$router.push({ name: "Sale" });
+
+        // Prepare products data for the sale record
         const products = this.cartProducts.map(product => ({
           SKU: product.product.SKU,
           name: product.product.name,
@@ -127,8 +237,9 @@ export default {
         }));
 
         const total_price = this.total;
-        const client_name = this.client.firstName + " " + this.client.lastName;
+        const client_name = `${this.client.firstName} ${this.client.lastName}`;
 
+        // Create a new sale record in the backend
         const saleResponse = await fetch("https://com.servhub.fr/api/sales/", {
           headers: { "Content-Type": "application/json" },
           method: "POST",
@@ -138,7 +249,7 @@ export default {
             customer_id: this.client._id,
             payment_status: this.paymentStatus,
             payment_method: this.paymentMethod,
-            soldBy: "66fdffb56790cc1514a6a267"
+            soldBy: "66fdffb56790cc1514a6a267" // Example seller ID
           }),
           redirect: "follow"
         });
@@ -155,12 +266,12 @@ export default {
             invoice_date: new Date().toISOString().split("T")[0],
             note: "Thank you for your purchase.",
             payment_term: {
-              term_type: "NO_DUE_DATE",  // No due date as the invoice is already paid
+              term_type: "NO_DUE_DATE", // No due date as the invoice is already paid
             },
             payment_detail: {
-              type: "PAYPAL",  // Mark as paid via PayPal
-              transaction_id: this.payementID,
-              method: "PayPal" // Add any method you want here
+              type: "PAYPAL", // Mark as paid via PayPal
+              transaction_id: this.paymentID,
+              method: "PayPal" // Payment method
             }
           },
           invoicer: {
@@ -229,12 +340,14 @@ export default {
               currency_code: "CAD",
               value: this.total
             },
-            paid_amount: {  // Specify that the full amount has been paid
+            paid_amount: { // Specify that the full amount has been paid
               currency_code: "CAD",
-              value: this.total  // Mark the total as the paid amount
+              value: this.total // Mark the total as the paid amount
             }
           }
         };
+
+        // Create the invoice in PayPal
         const invoiceResponse = await fetch('https://api-m.sandbox.paypal.com/v2/invoicing/invoices', {
           method: 'POST',
           headers: {
@@ -255,34 +368,43 @@ export default {
               'Authorization': `Bearer ${accessToken}`,
               'Content-Type': 'application/json'
             }
-            });
+          });
 
-            const invoiceDetails = await invoiceDetailsResponse.json();
+          const invoiceDetails = await invoiceDetailsResponse.json();
 
-            const sendInvoiceResponse = await fetch(`https://api-m.sandbox.paypal.com/v2/invoicing/invoices/${invoiceDetails.id}/send`, {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'application/json'
-              }
-            });
-            const sendInvoiceResult = await sendInvoiceResponse.json();
-            console.log("Invoice sent:", sendInvoiceResult);
+          // Send the invoice to the recipient
+          const sendInvoiceResponse = await fetch(`https://api-m.sandbox.paypal.com/v2/invoicing/invoices/${invoiceDetails.id}/send`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${accessToken}`,
+              'Content-Type': 'application/json'
+            }
+          });
 
-            // Step 4: Open recipient view URL
-            const invoiceMetadata = invoiceDetails.detail.metadata;
-            const recipientViewURL = invoiceMetadata.recipient_view_url;
-            console.log("Recipient : ", recipientViewURL);
-            window.open(recipientViewURL);
+          const sendInvoiceResult = await sendInvoiceResponse.json();
+          console.log("Invoice sent:", sendInvoiceResult);
+
+          // Step 4: Open recipient view URL
+          const invoiceMetadata = invoiceDetails.detail.metadata;
+          const recipientViewURL = invoiceMetadata.recipient_view_url;
+          console.log("Recipient View URL:", recipientViewURL);
+          window.open(recipientViewURL);
         }
 
       } catch (error) {
         console.error("Error creating invoice:", error);
       }
     },
+
+    /**
+     * Retrieves the PayPal access token using client credentials.
+     *
+     * @returns {Promise<string>} - The access token for PayPal API.
+     * @throws {Error} - If unable to fetch the access token.
+     */
     async getAccessToken() {
-      const clientID = "AZARWGYIQ1t8j1JqA2s-3G4ttRXc-uivXrk31VcVFnuQHMADwtmhEHRaHe7F_WAgZbp5UZO7mnnvPHyM";  // Replace with your actual sandbox client ID
-      const clientSecret = "ELZfZJzG29tgQBnF5bRY5u__o9Tq54KLzO1lGQcoPnAKsgsHpsCgdMcke2P5f7Z3m2QDggVgE2seU0X6";  // Replace with your actual sandbox client secret
+      const clientID = "AZARWGYIQ1t8j1JqA2s-3G4ttRXc-uivXrk31VcVFnuQHMADwtmhEHRaHe7F_WAgZbp5UZO7mnnvPHyM"; // Replace with your actual sandbox client ID
+      const clientSecret = "ELZfZJzG29tgQBnF5bRY5u__o9Tq54KLzO1lGQcoPnAKsgsHpsCgdMcke2P5f7Z3m2QDggVgE2seU0X6"; // Replace with your actual sandbox client secret
 
       const credentials = btoa(`${clientID}:${clientSecret}`); // Base64 encode the client ID and secret
 
@@ -298,45 +420,91 @@ export default {
       const data = await response.json();
 
       if (response.ok) {
-        console.log(data.access_token);
+        console.log("Access Token:", data.access_token);
         return data.access_token;
       } else {
         console.error('Error fetching access token:', data);
         throw new Error("Unable to fetch PayPal access token");
       }
     },
+
+    /**
+     * Deletes a product from the cart.
+     *
+     * @param {Object} product - The product to be removed from the cart.
+     */
     deleteProductFromCart(product) {
       this.$store.dispatch("removeFromCartAndHandleReceipt", product);
     },
+
+    /**
+     * Increases the quantity of a product in the cart.
+     *
+     * @param {number} index - The index of the product in the cart.
+     * @param {Object} product - The product whose quantity is to be increased.
+     */
     increaseQuantity(index, product) {
       this.cartProducts[index].quantity++;
-      this.$store.commit("updateQuantity", {_id: product.product._id, quantity: this.cartProducts[index].quantity});
-      this.$store.dispatch("handleReceipt", {payload: product.product, number: -1});
+      this.$store.commit("updateQuantity", { _id: product.product._id, quantity: this.cartProducts[index].quantity });
+      this.$store.dispatch("handleReceipt", { payload: product.product, number: -1 });
     },
+
+    /**
+     * Decreases the quantity of a product in the cart, ensuring it doesn't go below 1.
+     *
+     * @param {number} index - The index of the product in the cart.
+     * @param {Object} product - The product whose quantity is to be decreased.
+     */
     decreaseQuantity(index, product) {
       if (this.cartProducts[index].quantity > 1) {
         this.cartProducts[index].quantity--;
-        this.$store.commit("updateQuantity", {_id: product.product._id, quantity: this.cartProducts[index].quantity});
-        this.$store.dispatch("handleReceipt", {payload: product.product, number: 1});
+        this.$store.commit("updateQuantity", { _id: product.product._id, quantity: this.cartProducts[index].quantity });
+        this.$store.dispatch("handleReceipt", { payload: product.product, number: 1 });
       }
     },
+
+    /**
+     * Opens the client search overlay to allow user to select or modify client details.
+     */
     openClientOverlay() {
       this.showClientSearch = true;
     },
+
+    /**
+     * Closes the client search overlay without saving changes.
+     */
     closeClientOverlay() {
       this.showClientSearch = false;
     },
-    closeClientOverlayWithData(client){
+
+    /**
+     * Closes the client search overlay and updates the client data with the selected/modified client.
+     *
+     * @param {Object} client - The updated client data.
+     */
+    closeClientOverlayWithData(client) {
       this.showClientSearch = false;
       this.client = client;
       this.clientName = client.name;
     },
+
+    /**
+     * Sets up the PayPal button using the PayPal SDK.
+     * Configures the payment process and handles approval and errors.
+     */
     setupPayPalButton() {
       loadScript({
-        "client-id": "AZARWGYIQ1t8j1JqA2s-3G4ttRXc-uivXrk31VcVFnuQHMADwtmhEHRaHe7F_WAgZbp5UZO7mnnvPHyM", // Remplace par ton ID Sandbox
+        "client-id": "AZARWGYIQ1t8j1JqA2s-3G4ttRXc-uivXrk31VcVFnuQHMADwtmhEHRaHe7F_WAgZbp5UZO7mnnvPHyM", // Replace with your actual sandbox client ID
         currency: "CAD"
       }).then(paypal => {
         paypal.Buttons({
+          /**
+           * Creates the order with the total amount.
+           *
+           * @param {Object} data - Data related to the transaction.
+           * @param {Object} actions - PayPal actions for creating the order.
+           * @returns {Promise<string>} - The PayPal order ID.
+           */
           createOrder: (data, actions) => {
             return actions.order.create({
               purchase_units: [{
@@ -346,34 +514,53 @@ export default {
               }]
             });
           },
+
+          /**
+           * Handles the approval of the transaction.
+           *
+           * @param {Object} data - Data related to the transaction.
+           * @param {Object} actions - PayPal actions for capturing the order.
+           * @returns {Promise<void>}
+           */
           onApprove: (data, actions) => {
-            console.log("DATA : ", data);
+            console.log("Transaction Data:", data);
             return actions.order.capture().then(details => {
-              this.payementID = data.paymentID;
-              this.paymentStatus = "Completed"; // Mettre à jour le statut du paiement
-              console.log("Transaction effectuée par " + details.payer.name.given_name);
-              this.transferInvoice();
+              this.paymentID = data.paymentID;
+              this.paymentStatus = "Completed"; // Update payment status
+              console.log(`Transaction completed by ${details.payer.name.given_name}`);
+              this.transferInvoice(); // Proceed to transfer invoice after payment
             });
           },
+
+          /**
+           * Handles errors during the transaction process.
+           *
+           * @param {Object} err - The error encountered during the transaction.
+           */
           onError: (err) => {
-            console.error('Erreur lors de la transaction PayPal:', err);
-            this.paymentStatus = "Failed"; // Si une erreur survient, marquer comme échoué
+            console.error('Error during PayPal transaction:', err);
+            this.paymentStatus = "Failed"; // Mark payment as failed
           }
-        }).render("#paypal-button-container");
+        }).render("#paypal-button-container"); // Render PayPal button into the container
       }).catch(err => {
-        console.error('Erreur lors du chargement du SDK PayPal:', err);
+        console.error('Error loading PayPal SDK:', err);
       });
     }
   },
+
+  /**
+   * Lifecycle hook called when the component is mounted.
+   * Loads cart products and sets up the PayPal button.
+   */
   mounted() {
     this.loadCartProducts();
-    this.setupPayPalButton(); // Configurer le bouton PayPal quand le composant est monté
+    this.setupPayPalButton(); // Configure PayPal button when component is mounted
   }
 };
 </script>
 
 <style scoped>
-/* Keyframes for dust effect */
+/* Keyframes for dust effect animation */
 @keyframes dust {
   0% {
     opacity: 1;
@@ -392,12 +579,13 @@ export default {
   }
 }
 
-/* Animation applied on leave */
+/* Animation applied when an item leaves the transition group */
 .snap-leave-active {
   position: relative; /* Ensure the item is taken out of normal flow */
   animation: dust 1s forwards ease-out; /* 1-second dust animation */
 }
 
+/* Reset margins and paddings */
 html, body, #app {
   margin: 0;
   padding: 0;
@@ -405,44 +593,50 @@ html, body, #app {
   width: 100%;
 }
 
+/* Container for the home view */
 .home-container {
   display: flex;
-  height: 100vh; /* Assure que le conteneur occupe toute la hauteur de la fenêtre */
-  width: 100vw;  /* Pleine largeur de la fenêtre */
+  height: 100vh; /* Ensure the container occupies the full viewport height */
+  width: 100vw;  /* Full viewport width */
 }
 
+/* Navigation Bar styling */
 .navbar {
-  width: 60px; /* Largeur fixe pour la barre de navigation */
+  width: 60px; /* Fixed width for the navigation bar */
   background-color: #f0f0f0;
-  height: 100%; /* Prend toute la hauteur */
+  height: 100%; /* Occupies full height */
 }
 
+/* Content area styling */
 .content {
-  flex-grow: 1; /* Prend tout l'espace restant à côté de la navbar */
-  background-color: white; /* Enlève le fond gris avec un fond blanc explicite */
+  flex-grow: 1; /* Takes up remaining space next to the navbar */
+  background-color: white; /* Explicit white background */
   padding: 20px;
   display: flex;
-  justify-content: flex-start; /* Alignement vers le haut */
+  justify-content: flex-start; /* Align content to the top */
   align-items: flex-start;
-  height: 100%; /* Prend toute la hauteur disponible */
+  height: 100%; /* Occupies full available height */
 }
 
+/* Cart Page styling */
 .cart-page {
   width: 100%;
-  height: 100%; /* S'assure que cart-page prend toute la hauteur disponible */
+  height: 100%; /* Ensures cart-page takes full available height */
   display: flex;
-  justify-content: center; /* Centre horizontalement */
-  align-items: center; /* Centre verticalement */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
 }
 
+/* Cart Container styling */
 .cart-container {
   display: flex;
   justify-content: space-between;
-  width: 100%; /* Occupe toute la largeur disponible */
-  height: 100%; /* Prend toute la hauteur de la page */
-  max-width: 1200px; /* Limite la largeur maximale pour garder le conteneur centré */
+  width: 100%; /* Occupies full available width */
+  height: 100%; /* Occupies full available height */
+  max-width: 1200px; /* Limits maximum width to keep it centered */
 }
 
+/* Shopping Bag styling */
 .bag {
   width: 60%;
   background-color: #d0e7eb;
@@ -450,12 +644,12 @@ html, body, #app {
   border-radius: 15px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* Répartit les éléments dans tout l'espace vertical */
-  overflow-x: auto; /* Permet le scroll horizontal */
-  white-space: nowrap; /* Empêche le retour à la ligne pour les éléments enfants */
-
+  justify-content: flex-start; /* Distributes items vertically */
+  overflow-x: auto; /* Allows horizontal scrolling */
+  white-space: nowrap; /* Prevents line breaks for child elements */
 }
 
+/* Individual Cart Item styling */
 .cart-item {
   display: flex;
   justify-content: space-between;
@@ -463,27 +657,30 @@ html, body, #app {
   padding: 15px;
   margin-bottom: 20px;
   border-radius: 25px;
-  background-color: transparent; /* Aucun fond ici */
+  background-color: transparent; /* No background */
 }
 
+/* Product Image styling */
 .cart-item img {
   width: auto;
   height: 97px;
-  border-radius: 15px; /* Bord légèrement arrondi pour l'image */
-  margin-right: 20px; /* Ajoute une marge entre l'image et les détails */
+  border-radius: 15px; /* Slightly rounded corners for the image */
+  margin-right: 20px; /* Adds space between image and details */
 }
 
+/* Item Details container */
 .item-details {
   flex-grow: 1;
   padding: 15px;
   display: flex;
-  justify-content: space-between; /* Espace entre nom/SKU à gauche et prix à droite */
+  justify-content: space-between; /* Space between left details and price */
   align-items: center;
-  background-color: white; /* Ajoute un fond blanc ici */
+  background-color: white; /* White background for details */
   border-radius: 25px;
-  margin-right: 20px; /* Espacement entre les détails et les options de livraison */
+  margin-right: 20px; /* Space between details and options */
 }
 
+/* Left side of Item Details (Name and SKU) */
 .item-details .details-left {
   display: flex;
   flex-direction: column;
@@ -491,12 +688,14 @@ html, body, #app {
   flex-grow: 1;
 }
 
+/* Quantity Selector styling */
 .quantity-selector {
   display: flex;
   align-items: center;
   margin: 0 20px;
 }
 
+/* Quantity Selector buttons styling */
 .quantity-selector button {
   background-color: #f0f0f0;
   border: none;
@@ -505,41 +704,49 @@ html, body, #app {
   cursor: pointer;
 }
 
+/* Quantity display styling */
 .quantity-selector span {
   margin: 0 10px;
   font-size: 16px;
 }
 
+/* Product Name styling */
 .item-details h3 {
   font-size: 20px;
   margin: 0;
   font-weight: 600;
 }
 
+/* Product SKU styling */
 .item-details p {
   font-size: 14px;
   color: gray;
 }
 
+/* Product Total Price styling */
 .item-details span {
   font-size: 18px;
   font-weight: bold;
   color: black;
-  text-align: right; /* Aligne le prix complètement à droite */
+  text-align: right; /* Aligns price to the right */
 }
 
+/* Trash Icon styling (hidden by default) */
 .item-details i.fa-trash {
-  display: none; /* Cache uniquement l'icône de poubelle par défaut */
+  display: none; /* Hide the trash icon by default */
 }
 
+/* Show Trash Icon on hover */
 .item-details:hover i.fa-trash {
-  display: inline-block; /* Affiche l'icône de poubelle lors du survol de .item-details */
+  display: inline-block; /* Display trash icon when hovering over item details */
 }
 
-.fa-trash:hover{
+/* Trash Icon hover effect */
+.fa-trash:hover {
   color: red;
 }
 
+/* General Button styling */
 button {
   background-color: #007bff;
   color: white;
@@ -550,10 +757,12 @@ button {
   font-size: 16px;
 }
 
+/* Button hover effect */
 button:hover {
   background-color: #0056b3;
 }
 
+/* Summary Section styling */
 .summary {
   width: 30%;
   padding: 20px;
@@ -562,6 +771,6 @@ button:hover {
   display: flex;
   flex-direction: column;
   overflow: scroll;
-  justify-content: space-between; /* S'assure que les éléments de la section récapitulative sont bien espacés */
+  justify-content: space-between; /* Ensures elements are well-spaced within the summary */
 }
 </style>

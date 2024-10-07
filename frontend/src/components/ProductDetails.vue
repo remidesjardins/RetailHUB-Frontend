@@ -1,25 +1,50 @@
-<template>
-  <div class="overlay" @click.self="closeDetails">
-    <div class="product-details" @click.stop>
-      <span class="close-button" @click="closeDetails"><i class="fa-solid fa-xmark fa-2xl"></i></span>
+<!--
+  =====================================================
+  Project: RetailHub
+  File: ProductDetails.vue
+  Description: Component for displaying detailed information about a product, including functionalities to add to cart, modify, or delete the product.
+  Participants:
+    - Alexandre Borny
+    - Maël Castellan
+    - Laura Donato
+    - Rémi Desjardins
+  =====================================================
+-->
 
-      <!-- Left content: Image, Category, Price -->
+<template>
+  <!-- Overlay container to focus on the Product Details modal -->
+  <div class="overlay" @click.self="closeDetails">
+    <!-- Product Details container -->
+    <div class="product-details" @click.stop>
+      <!-- Close button to exit the Product Details modal -->
+      <span class="close-button" @click="closeDetails">
+        <i class="fa-solid fa-xmark fa-2xl"></i>
+      </span>
+
+      <!-- Left section: Image, Category, Price, and Cart Controls -->
       <div class="left-content">
+        <!-- Product Title -->
         <h1 class="product-title">{{ product.name }}</h1>
+        <!-- Product Category Label -->
         <span class="category-label">{{ product.category }}</span>
+        <!-- Product SKU -->
         <span class="sku">{{ product.SKU }}</span>
-        <img :src="product.Image" alt="Product image" />
+        <!-- Product Image -->
+        <img :src="product.Image || productImage" alt="Product image" />
+
+        <!-- Stock Information -->
         <div class="stock-info">
           <span>Available stock:</span>
           <div class="stock-level">
             <span class="stock-number">{{ product.Current_stock }}</span>
             <span class="stock-location">{{ product.Slot }}</span>
           </div>
-
         </div>
+
+        <!-- Product Price -->
         <div class="price">{{ product.price }} $</div>
 
-        <!-- Add to cart or update quantity -->
+        <!-- Cart Controls: Add to Cart or Update Quantity -->
         <div v-if="isProductInCart" class="cart-quantity">
           <button class="cart-btn" @click="decrementQuantity">-</button>
           <span class="quantity-number">{{ productQuantityInCart }}</span>
@@ -34,13 +59,13 @@
         </button>
       </div>
 
-      <!-- Right content: Overview -->
+      <!-- Right section: Product Overview -->
       <div class="summary">
         <h3>Overview</h3>
         <p>{{ product.Details }}</p>
       </div>
 
-      <!-- Action icons (Modify and Delete) -->
+      <!-- Action Icons: Modify and Delete Product -->
       <div class="bottom-right-buttons">
         <button @click="showUpdateForm = true" class="icon-button">
           <i class="fa-solid fa-pen-to-square"></i>
@@ -52,14 +77,8 @@
     </div>
   </div>
 
+  <!-- Update Form Modal: ModifyProductForm Component -->
   <div v-if="showUpdateForm" class="overlay">
-    <div class="modal">
-      <button @click="goToUpdateProduct(product.SKU)">Update</button>
-    </div>
-  </div>
-
-  <!-- Update Form Modal -->
-  <div class="overlay" v-if="showUpdateForm">
     <ModifyProductForm
         :productSKU="product.SKU"
         @close="showUpdateForm = false"
@@ -68,40 +87,70 @@
 </template>
 
 <script>
-
-import ModifyProductForm from '@/components/ModifyProductForm.vue'; // Path to your new ModifyProductForm.vue file
+/**
+ * ProductDetails Component
+ * Displays detailed information about a product and provides functionalities to add the product to the cart, modify its details, or delete it.
+ */
+import ModifyProductForm from '@/components/ModifyProductForm.vue'; // Path to ModifyProductForm component
 import throttle from 'lodash/throttle';
 
 export default {
   props: {
+    /**
+     * The product object containing all details about the product.
+     * @type {Object}
+     * @required
+     */
     product: {
       type: Object,
       required: true,
     },
-    visible: Boolean
+    /**
+     * Visibility flag to control the display of the Product Details modal.
+     * @type {Boolean}
+     */
+    visible: Boolean,
   },
   data() {
     return {
+      /**
+       * Controls the visibility of the ModifyProductForm component.
+       * @type {Boolean}
+       */
       showUpdateForm: false,
-      productImage: "https://via.placeholder.com/150?text=No+Image", // Default product image,
-      productInCart: false
-
+      /**
+       * Default product image URL displayed if the product does not have one.
+       * @type {String}
+       */
+      productImage: "https://via.placeholder.com/150?text=No+Image",
     };
   },
-  computed:{
+  computed: {
+    /**
+     * Determines if the product is already in the cart by checking the store's bagContents.
+     * @returns {Boolean}
+     */
     isProductInCart() {
       return this.$store.state.bagContents.some(item => item.product._id === this.product._id);
     },
+    /**
+     * Retrieves the quantity of the product in the cart from the store.
+     * @returns {Number}
+     */
     productQuantityInCart() {
       const cartItem = this.$store.state.bagContents.find(item => item.product._id === this.product._id);
       return cartItem ? cartItem.quantity : 0;
-    }
+    },
   },
   methods: {
+    /**
+     * Deletes the product by sending a DELETE request to the API.
+     * Confirms the action with the user before proceeding.
+     * @param {String} productSKU - The SKU of the product to be deleted.
+     */
     deleteProduct(productSKU) {
       if (confirm("Are you sure you want to delete this product?")) {
         // Send DELETE request to the backend
-        console.log(productSKU);
         fetch(`https://com.servhub.fr/api/products/${productSKU}`, {
           method: 'DELETE',
           headers: {
@@ -122,31 +171,61 @@ export default {
             });
       }
     },
+
+    /**
+     * Navigates the user to the UpdateProduct page with the specific productSKU.
+     * @param {String} productSKU - The SKU of the product to be updated.
+     */
     goToUpdateProduct(productSKU) {
       this.$router.push({ name: "UpdateProduct", params: { productSKU } });
     },
+
+    /**
+     * Closes the Product Details modal by emitting a 'close' event to the parent component.
+     */
     closeDetails() {
       this.$emit('close');
     },
-    // Optional method to fetch a product image (if available)
+
+    /**
+     * Sets the default product image if the product does not have one.
+     */
     fetchProductImage() {
-      this.productImage = "https://via.placeholder.com/150?text=No+Image";
+      if (!this.product.Image) {
+        this.productImage = "https://via.placeholder.com/150?text=No+Image";
+      }
     },
+
+    /**
+     * Adds the product to the cart by committing to the Vuex store.
+     * Also handles receipt and ticket checks through store actions.
+     * @param {Object} product - The product object to be added to the cart.
+     */
     addToCart(product) {
       this.$store.commit("addToCart", product);
       this.$store.dispatch("handleReceipt", { payload: product, number: -1 });
-      this.productInCart = true;
+      // No need to set productInCart manually as it's computed
 
+      // Dispatch handleCheckTicket after 5 minutes (300,000 ms)
       setTimeout(() => {
         this.$store.dispatch("handleCheckTicket", product);
       }, 300000);
     },
 
+    /**
+     * Increments the quantity of the product in the cart.
+     * Uses throttling to prevent multiple rapid clicks.
+     */
     incrementQuantity: throttle(function() {
       this.$store.commit("updateQuantity", { _id: this.product._id, quantity: this.productQuantityInCart + 1 });
       this.$store.dispatch("handleReceipt", { payload: this.product, number: -1 });
     }, 500), // Prevent multiple clicks within 500ms
 
+    /**
+     * Decrements the quantity of the product in the cart.
+     * Removes the product from the cart if the quantity reaches zero.
+     * Uses throttling to prevent multiple rapid clicks.
+     */
     decrementQuantity: throttle(function() {
       if (this.productQuantityInCart > 1) {
         this.$store.commit("updateQuantity", { _id: this.product._id, quantity: this.productQuantityInCart - 1 });
@@ -156,16 +235,22 @@ export default {
         this.$store.commit("removeFromCart", { product: this.product });
         this.$store.dispatch("handleReceipt", { payload: this.product, number: quantityToRelease });
       }
-    }, 500)
+    }, 500),
   },
   components: {
+    /**
+     * Importing the ModifyProductForm component for updating product details.
+     */
     ModifyProductForm,
   },
   mounted() {
+    /**
+     * Lifecycle hook called when the component is mounted.
+     * Initializes the product image.
+     */
     this.fetchProductImage(); // Fetch the product image on mount
     console.log('Product details:', this.product);
-
-  }
+  },
 };
 </script>
 

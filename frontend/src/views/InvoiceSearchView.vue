@@ -1,20 +1,50 @@
+<!--
+ * RetailHub - InvoiceSearchView.vue
+ *
+ * Participants:
+ * - Alexandre Borny
+ * - Maël Castellan
+ * - Laura Donato
+ * - Rémi Desjardins
+ *
+ * This component provides an interface for searching and viewing invoices within RetailHub.
+ * Users can search for invoices by client name or invoice reference and view the list of filtered invoices.
+ * It includes navigation tabs to switch between client and invoice views.
+ -->
+
 <template>
-  <NavBar />
-  <!-- Main content inside the invoice-search container -->
   <div class="invoice-search">
-    <!-- Toggle Button and Header at the top -->
+    <!-- Navigation Bar -->
+    <NavBar />
+
+    <!-- Top Section containing tab buttons and search header -->
     <div class="top-section">
+      <!-- Top Bar with Tab Buttons -->
       <div class="top-bar">
-        <button :class="{ active: activeTab === 'client' }" @click="switchTab('client')">Client</button>
-        <button :class="{ active: activeTab === 'invoice' }" @click="switchTab('invoice')">Invoice</button>
+        <!-- Client Tab Button -->
+        <button
+            :class="{ active: activeTab === 'client' }"
+            @click="switchTab('client')"
+        >
+          Client
+        </button>
+
+        <!-- Invoice Tab Button -->
+        <button
+            :class="{ active: activeTab === 'invoice' }"
+            @click="switchTab('invoice')"
+        >
+          Invoice
+        </button>
       </div>
 
-      <!-- Place the header inside the top-section -->
+      <!-- Header Component for Search Functionality -->
       <Header :searchQuery="searchQuery" @search="searchSales" id="header" />
     </div>
 
-    <!-- Scrollable Recent Sales Section -->
+    <!-- Recent Sales Section displaying the list of invoices -->
     <div class="recent-sales">
+      <!-- InvoiceList Component displaying filtered sales -->
       <InvoiceList :sales="filteredSales"></InvoiceList>
     </div>
   </div>
@@ -31,22 +61,52 @@ export default {
     InvoiceList,
     NavBar,
   },
+
   data() {
     return {
+      /**
+       * The current search query entered by the user.
+       * Used to filter the list of invoices.
+       * @type {string}
+       */
       searchQuery: '',
+
+      /**
+       * The currently active tab ('client' or 'invoice').
+       * Determines which view is active.
+       * @type {string}
+       */
       activeTab: 'invoice',
+
+      /**
+       * Array holding all fetched sales data from the backend.
+       * @type {Array}
+       */
       sales: [],
+
+      /**
+       * Array holding the filtered sales based on the search query.
+       * @type {Array}
+       */
       filteredSales: [],
     };
   },
+
   methods: {
-    // Fetch sales from the backend
+    /**
+     * Fetches all sales data from the backend API.
+     * Processes each sale to include customer details and formats the reference.
+     * Updates the sales and filteredSales arrays with the fetched data.
+     *
+     * @async
+     */
     async fetchSales() {
       try {
         const response = await fetch('https://com.servhub.fr/api/sales');
         const data = await response.json();
 
         if (Array.isArray(data) && data.length > 0) {
+          // Process each sale to include customer details and formatted reference
           this.sales = await Promise.all(
               data.map(async sale => {
                 const customer = await this.fetchCustomer(sale.customer_id);
@@ -59,14 +119,19 @@ export default {
                 };
               })
           );
-          this.filteredSales = this.sales; // Initially, show all sales
+          this.filteredSales = this.sales; // Initially, display all sales
         }
       } catch (error) {
         console.error('Error fetching sales:', error);
       }
     },
 
-    // Filter sales based on the search query
+    /**
+     * Filters the sales based on the provided search query.
+     * The search matches against the client's name and the invoice reference.
+     *
+     * @param {string} query - The search query entered by the user.
+     */
     searchSales(query) {
       const lowerQuery = query.toLowerCase();
       this.filteredSales = this.sales.filter(
@@ -76,6 +141,12 @@ export default {
       );
     },
 
+    /**
+     * Fetches customer details based on the provided customer ID from the backend API.
+     *
+     * @param {string} customer_id - The unique identifier of the customer.
+     * @returns {Promise<Object|null>} - The customer data object or null if an error occurs.
+     */
     async fetchCustomer(customer_id) {
       try {
         const response = await fetch(`https://com.servhub.fr/api/customers/${customer_id}`);
@@ -87,13 +158,24 @@ export default {
       }
     },
 
+    /**
+     * Switches the active tab between 'client' and 'invoice'.
+     * Navigates to the corresponding view based on the selected tab.
+     *
+     * @param {string} tab - The tab to switch to ('client' or 'invoice').
+     */
     switchTab(tab) {
       this.activeTab = tab;
       if (tab === 'client') {
-        this.$router.push({name: 'ClientSearch'});
+        this.$router.push({ name: 'ClientSearch' });
       }
     },
   },
+
+  /**
+   * Lifecycle hook called when the component is mounted.
+   * Initiates fetching of sales data.
+   */
   mounted() {
     this.fetchSales();
   },
@@ -133,7 +215,6 @@ export default {
 
 .top-bar button.active {
   background-color: #80cbc4;
-  color: white;
 }
 
 /* Header inside top-section */

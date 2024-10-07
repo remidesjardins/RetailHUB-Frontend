@@ -1,7 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import SaleStockView from "@/views/SaleStockView.vue";
-import LogInView from "@/views/LogInView.vue";
-import RegisterView from "@/views/RegisterView.vue";
 import AdminView from "@/views/AdminView.vue";
 import BagView from "@/views/BagView.vue";
 import ClientSearchView from "@/views/ClientSearchView.vue";
@@ -14,16 +12,6 @@ const routes = [
         path: '/',
         name: 'Sale',
         component: SaleStockView,
-    },
-    {
-        path: '/login',
-        name: 'Login',
-        component: LogInView,
-    },
-    {
-        path: '/register',
-        name: 'Register',
-        component: RegisterView,
     },
     {
         path: '/admin',

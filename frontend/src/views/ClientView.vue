@@ -1,33 +1,79 @@
+<!--
+ * RetailHub - ClientView.vue
+ *
+ * Participants:
+ * - Alexandre Borny
+ * - Maël Castellan
+ * - Laura Donato
+ * - Rémi Desjardins
+ *
+ * This component displays detailed information about a specific client,
+ * including their contact information and a list of recent invoices.
+ * It also provides functionality to update client information and navigate
+ * between client and invoice views.
+ -->
+
 <template>
   <div class="invoice-container">
+    <!-- UpdateClient Overlay for modifying client details -->
     <UpdateClient
         v-if="showUpdateClient"
         :client="clientCopy"
         @close="closeUpdateClient"
         @close-data="updateClient"
     />
+
+    <!-- Navigation Bar -->
     <NavBar/>
+
+    <!-- Top Bar with Tab Buttons -->
     <div class="top-bar">
-      <button :class="{ active: activeTab === 'client' }" @click="switchTab('client')">Client</button>
-      <button :class="{ active: activeTab === 'invoice' }" @click="switchTab('invoice')">Invoice</button>
+      <!-- Client Tab Button -->
+      <button
+          :class="{ active: activeTab === 'client' }"
+          @click="switchTab('client')"
+      >
+        Client
+      </button>
+
+      <!-- Invoice Tab Button -->
+      <button
+          :class="{ active: activeTab === 'invoice' }"
+          @click="switchTab('invoice')"
+      >
+        Invoice
+      </button>
     </div>
+
+    <!-- Client Header Section -->
     <div class="client-header">
       <div class="client-info">
+        <!-- Display Client Name -->
         <h3>M. {{ client.name }}</h3>
+        <!-- Display Client ID -->
         <p>C-{{ client._id }}</p>
+        <!-- Display Client Address -->
         <p>{{ client.address }}</p>
       </div>
+
       <div class="client-actions">
         <div class="contact-info">
+          <!-- Display Client Phone Number -->
           <p>{{ client.phone }}</p>
+          <!-- Display Client Email -->
           <p>{{ client.email }}</p>
         </div>
-        <button @click="editClientInfo" class="edit-button"><i class="fa fa-pencil-alt"></i></button>
+        <!-- Button to Edit Client Information -->
+        <button @click="editClientInfo" class="edit-button">
+          <i class="fa fa-pencil-alt"></i>
+        </button>
       </div>
     </div>
 
+    <!-- Recent Invoices Section -->
     <div class="recent-invoice-section">
-      <InvoiceList :sales="this.filteredSales" />
+      <!-- InvoiceList Component to display filtered sales -->
+      <InvoiceList :sales="filteredSales" />
     </div>
   </div>
 </template>
@@ -40,48 +86,95 @@ import UpdateClient from "@/components/UpdateClient.vue";
 
 export default {
   props: ["clientId"],
+
   components: {
     NavBar,
     InvoiceList,
     UpdateClient,
   },
+
   data() {
     return {
+      /**
+       * Object containing the client's detailed information.
+       */
       client: {},
+
+      /**
+       * Array of sales (invoices) related to the client.
+       */
       filteredSales: [],
+
+      /**
+       * Array of all sales fetched from the backend.
+       */
       sales: [],
+
+      /**
+       * Flag to control the visibility of the UpdateClient overlay.
+       */
       showUpdateClient: false,
+
+      /**
+       * A copy of the client object used for editing purposes to avoid mutating the original data.
+       */
       clientCopy: {},
+
+      /**
+       * Currently active tab ('client' or 'invoice').
+       */
       activeTab: 'client',
     };
   },
+
   methods: {
+    /**
+     * Formats a date string into 'MM/DD/YYYY' format.
+     *
+     * @param {string} date - The date string to format.
+     * @returns {string} - The formatted date string.
+     */
     formatDate(date) {
       const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
       return new Date(date).toLocaleDateString(undefined, options);
     },
+
+    /**
+     * Fetches detailed information about the client from the backend API.
+     */
     async fetchClientInfo() {
       const requestOptions = {
         method: "GET",
         redirect: "follow"
       };
 
-      fetch(`https://com.servhub.fr/api/customers/${this.clientId}`, requestOptions)
-          .then((response) => response.json())
-          .then((result) => {
-            this.client = result;
-          })
-          .catch((error) => console.error(error));
+      try {
+        const response = await fetch(`https://com.servhub.fr/api/customers/${this.clientId}`, requestOptions);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch client info: ${response.statusText}`);
+        }
+        const result = await response.json();
+        this.client = result;
+      } catch (error) {
+        console.error(error);
+      }
     },
+
+    /**
+     * Fetches all sales from the backend API and filters them to include only those related to the current client.
+     */
     async fetchSales() {
       try {
         const response = await fetch('https://com.servhub.fr/api/sales');
+        if (!response.ok) {
+          throw new Error(`Failed to fetch sales: ${response.statusText}`);
+        }
         const data = await response.json();
 
         if (Array.isArray(data) && data.length > 0) {
           this.sales = await Promise.all(
               data.map(async sale => {
-                // Check if the sale matches the clientId
+                // Check if the sale is associated with the current client
                 if (sale.customer_id === this.clientId) {
                   return {
                     _id: sale._id,
@@ -91,39 +184,63 @@ export default {
                     reference: `I-${sale._id.substring(0, 8)}`,
                   };
                 }
-                return null; // If the sale doesn't match, return null
+                return null; // Exclude sales not related to the client
               })
           );
-          // Filter out null values (non-matching sales)
+          // Remove null values resulting from non-matching sales
           this.sales = this.sales.filter(sale => sale !== null);
-          this.filteredSales = this.sales; // Initially, show only the filtered sales
+          this.filteredSales = this.sales; // Initialize with all filtered sales
         }
       } catch (error) {
         console.error('Error fetching sales:', error);
       }
     },
+
+    /**
+     * Opens the UpdateClient overlay to allow editing of client information.
+     */
     editClientInfo() {
       this.showUpdateClient = true;
+      // Create a copy of the client data to prevent direct mutation
       this.clientCopy = { ...this.client };
     },
+
+    /**
+     * Closes the UpdateClient overlay without saving changes.
+     */
     closeUpdateClient() {
       this.showUpdateClient = false;
     },
+
+    /**
+     * Updates the client data with the modified information from the UpdateClient component.
+     *
+     * @param {Object} updatedClient - The updated client information.
+     */
     updateClient(updatedClient) {
-      this.showUpdateClient = false; // Ferme l'overlay
-      this.client = updatedClient;
+      this.showUpdateClient = false; // Close the overlay
+      this.client = updatedClient; // Update the client data with the modified information
     },
+
+    /**
+     * Switches the active tab between 'client' and 'invoice'.
+     * Redirects to the corresponding view based on the selected tab.
+     *
+     * @param {string} tab - The tab to switch to ('client' or 'invoice').
+     */
     switchTab(tab) {
       this.activeTab = tab;
       if (tab === 'client') {
-        this.$router.push({name: 'ClientSearch'});
+        this.$router.push({ name: 'ClientSearch' });
       }
-      if(tab === 'invoice'){
-        this.$router.push({name: 'InvoiceSearch'})
+      if (tab === 'invoice') {
+        this.$router.push({ name: 'InvoiceSearch' });
       }
     },
   },
+
   mounted() {
+    // Fetch client information and related sales when the component is mounted
     this.fetchClientInfo();
     this.fetchSales();
   }
@@ -239,6 +356,5 @@ export default {
 
 .top-bar button.active {
   background-color: #80cbc4;
-  color: white;
 }
 </style>

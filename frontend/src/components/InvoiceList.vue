@@ -1,77 +1,144 @@
+<!--
+  =====================================================
+  Project: RetailHub
+  File: InvoiceList.vue
+  Description: Component for displaying and managing recent sales invoices within RetailHub.
+  Participants:
+    - Alexandre Borny
+    - Maël Castellan
+    - Laura Donato
+    - Rémi Desjardins
+  =====================================================
+-->
+
 <template>
+  <!-- Container for the invoice list section -->
   <div class="invoice-list">
-    <h2>Recent Sales <i class="fa fa-history"></i></h2>
+    <h2>
+      Recent Sales <i class="fa fa-history"></i>
+    </h2>
+
+    <!-- Container for individual invoice cards -->
     <div class="invoice-container">
-      <!-- Display filtered sales -->
+      <!-- Loop through sales to display each invoice -->
       <div
           v-for="(sale, index) in (sales.length ? sales : Array(10).fill({}))"
           :key="sale._id || index"
           class="invoice-card"
       >
+        <!-- Display sale details if sales data is available -->
         <template v-if="sales.length">
           <p class="customer-name">{{ sale.customer.name }}</p>
           <p class="total-price">{{ sale.total_price }} €</p>
           <p class="sale-reference">{{ sale.reference }}</p>
 
-          <!-- Buttons for Update, Delete, and Generate Invoice -->
+          <!-- Action buttons for each invoice -->
           <div class="card-actions">
+            <!-- Button to update the sale -->
             <button @click="updateSale(sale)" class="action-btn update-btn">
               <i class="fa fa-pencil-alt"></i>
             </button>
+            <!-- Button to delete the sale -->
             <button @click="deleteSale(sale._id)" class="action-btn delete-btn">
               <i class="fa fa-trash"></i>
             </button>
-            <!-- New button for generating invoice -->
+            <!-- Button to generate an invoice -->
             <button @click="generateInvoice(sale)" class="action-btn invoice-btn">
               <i class="fa fa-file-invoice"></i>
             </button>
           </div>
         </template>
+
+        <!-- Display a message if no sales are found -->
         <template v-else>
           <p class="nothing-found">Oups, nothing found</p>
         </template>
       </div>
     </div>
   </div>
+
+  <!-- UpdateSaleForm component displayed conditionally -->
   <UpdateSaleForm
+      v-if="selectedSale"
       :sale="selectedSale"
       :show="showUpdateOverlay"
       @closeOverlay="closeUpdateOverlay"
-      @updateSale="handleSaleUpdate"
   />
 </template>
 
 <script>
+/**
+ * InvoiceList Component
+ * Displays a list of recent sales and provides functionalities to update, delete, and generate invoices for each sale.
+ */
 import UpdateSaleForm from "@/components/UpdateSaleForm.vue";
 
 export default {
   props: {
+    /**
+     * Array of sales data passed from the parent component.
+     * @type {Array}
+     */
     sales: {
       type: Array,
       default: () => []
     }
   },
-  data(){
-    return{
+  data() {
+    return {
+      /**
+       * Controls the visibility of the UpdateSaleForm component.
+       * @type {Boolean}
+       */
       showUpdateOverlay: false,
+
+      /**
+       * The currently selected sale for updating.
+       * @type {Object|null}
+       */
       selectedSale: null,
-    }
+
+      /**
+       * Local copy of sales data for frontend manipulation.
+       * @type {Array}
+       */
+      localSales: this.sales,
+    };
   },
   components: {
     UpdateSaleForm,
   },
   methods: {
+    /**
+     * Handles actions related to the customer's name.
+     * Currently logs the customer information to the console.
+     * @param {Object} customer - The customer object.
+     */
     handleCustomerName(customer) {
       console.log("CUSTOMER :", customer);
     },
-    // Placeholder methods for updating and deleting sales
+
+    /**
+     * Opens the UpdateSaleForm by setting the selectedSale and showing the overlay.
+     * @param {Object} sale - The sale object to be updated.
+     */
     updateSale(sale) {
       this.selectedSale = sale;
       this.showUpdateOverlay = true;
     },
+
+    /**
+     * Closes the UpdateSaleForm overlay by hiding it.
+     */
     closeUpdateOverlay() {
       this.showUpdateOverlay = false;
     },
+
+    /**
+     * Deletes a sale by its ID after user confirmation.
+     * Sends a DELETE request to the API and updates the local sales list upon success.
+     * @param {String} saleId - The ID of the sale to be deleted.
+     */
     async deleteSale(saleId) {
       if (confirm("Are you sure you want to delete this sale?")) {
         try {
@@ -81,8 +148,8 @@ export default {
 
           if (response.ok) {
             alert('Sale deleted successfully!');
-            // Remove the sale from the list in the frontend
-            this.sales = this.sales.filter(sale => sale._id !== saleId);
+            // Remove the deleted sale from the local sales list
+            this.localSales = this.localSales.filter(sale => sale._id !== saleId);
           } else {
             const errorData = await response.json();
             alert(`Error deleting sale: ${errorData.message}`);
@@ -92,7 +159,12 @@ export default {
         }
       }
     },
-    // New method to generate and send an invoice for a sale
+
+    /**
+     * Retrieves an access token from PayPal for API authentication.
+     * @returns {Promise<String>} The access token.
+     * @throws Will throw an error if the token cannot be fetched.
+     */
     async getAccessToken() {
       const clientID = "AZARWGYIQ1t8j1JqA2s-3G4ttRXc-uivXrk31VcVFnuQHMADwtmhEHRaHe7F_WAgZbp5UZO7mnnvPHyM";
       const clientSecret = "ELZfZJzG29tgQBnF5bRY5u__o9Tq54KLzO1lGQcoPnAKsgsHpsCgdMcke2P5f7Z3m2QDggVgE2seU0X6";
@@ -114,22 +186,34 @@ export default {
         throw new Error("Unable to fetch PayPal access token");
       }
     },
+
+    /**
+     * Generates and sends an invoice for a given sale using PayPal's API.
+     * @param {Object} sale - The sale object for which the invoice is to be generated.
+     */
     async generateInvoice(sale) {
       try {
+        // Validate that the sale has products and customer information
         if (!sale.sale.products || !sale.customer) {
           console.error("Sale does not have products or customer information.", sale);
           return;
         }
 
+        // Obtain PayPal access token
         const accessToken = await this.getAccessToken();
 
-        // Split customer address
+        // Split customer address into individual components
         const addressParts = sale.customer.address.split(",");
         const addressLine1 = addressParts[0]?.trim() || "";
         const city = addressParts[1]?.trim() || "";
         const state = addressParts[2]?.trim() || "";
         const postalCode = addressParts[3]?.trim() || "";
         const country = addressParts[4]?.trim() || "CA"; // Default country is Canada (CA)
+
+        if (!sale.customer || !sale.customer.address) {
+          console.error("Customer address is missing.", sale);
+          return;
+        }
 
         // Fetch complete product details for each product in the sale
         const items = await Promise.all(sale.sale.products.map(async (product) => {
@@ -155,11 +239,11 @@ export default {
           };
         }));
 
-        // Calculate item and tax totals
+        // Calculate total tax and item amounts
         const tax_total = items.reduce((sum, product) => sum + parseFloat(product.tax.amount.value), 0).toFixed(2);
         const item_total = items.reduce((sum, product) => sum + (product.unit_amount.value * product.quantity), 0).toFixed(2);
 
-        // Create the invoice payload
+        // Create the invoice payload for PayPal API
         const invoicePayload = {
           detail: {
             currency_code: "CAD",
@@ -202,7 +286,7 @@ export default {
                   admin_area_2: city,
                   admin_area_1: state,
                   postal_code: postalCode,
-                  country_code: country
+                  country_code: "CA"
                 },
                 email_address: sale.customer.email
               }
@@ -231,7 +315,7 @@ export default {
           }
         };
 
-        // Send the request to PayPal to create the invoice
+        // Send the invoice creation request to PayPal
         const invoiceResponse = await fetch('https://api-m.sandbox.paypal.com/v2/invoicing/invoices', {
           method: 'POST',
           headers: {
@@ -245,6 +329,7 @@ export default {
         console.log("Invoice created:", invoiceResult);
 
         if (invoiceResult.href) {
+          // Fetch the invoice details using the provided href
           const invoiceDetailsResponse = await fetch(invoiceResult.href, {
             method: 'GET',
             headers: {
@@ -255,6 +340,8 @@ export default {
 
           const invoiceDetails = await invoiceDetailsResponse.json();
           console.log("Invoice details:", invoiceDetails);
+
+          // Send the invoice to the recipient
           const sendInvoiceResponse = await fetch(`https://api-m.sandbox.paypal.com/v2/invoicing/invoices/${invoiceDetails.id}/send`, {
             method: 'POST',
             headers: {
@@ -265,6 +352,7 @@ export default {
           const sendInvoiceResult = await sendInvoiceResponse.json();
           console.log("Invoice sent:", sendInvoiceResult);
 
+          // Open the invoice in a new browser tab if a recipient view URL is provided
           const recipientViewURL = invoiceDetails.detail.metadata.recipient_view_url;
           if (recipientViewURL) {
             window.open(recipientViewURL); // Open the invoice in a new tab
@@ -274,6 +362,13 @@ export default {
         console.error("Error generating invoice:", error);
       }
     },
+
+    /**
+     * Fetches product details from the API based on the provided SKU.
+     * @param {String} SKU - The Stock Keeping Unit identifier for the product.
+     * @returns {Promise<Object>} The product details.
+     * @throws Will throw an error if the product cannot be fetched.
+     */
     async fetchProduct(SKU) {
       try {
         const response = await fetch(`https://com.servhub.fr/api/products/${SKU}`);

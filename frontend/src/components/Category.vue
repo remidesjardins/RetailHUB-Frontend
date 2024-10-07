@@ -1,8 +1,24 @@
-<!-- CategoryOverlay.vue -->
+<!--
+  =====================================================
+  Project: RetailHub
+  File: Category.vue
+  Description: Component for managing categories within RetailHub.
+  Participants:
+    - Alexandre Borny
+    - Maël Castellan
+    - Laura Donato
+    - Rémi Desjardins
+  =====================================================
+-->
+
 <template>
+  <!-- Overlay to display the category management modal -->
   <div v-if="show" class="overlay">
     <div class="overlay-content">
+      <!-- Header for managing categories -->
       <h3>Manage Categories</h3>
+
+      <!-- Form to add a new category -->
       <form @submit.prevent="addCategory">
         <input
             v-model="newCategory"
@@ -13,26 +29,38 @@
         <button type="submit" class="submit-btn">Add Category</button>
       </form>
 
+      <!-- List of existing categories -->
       <h4>Existing Categories</h4>
       <ul>
-        <li v-for="category in categories" :key="category" class="category-item">
+        <li v-for="category in categories" :key="category._id" class="category-item">
           <span>{{ category.name }}</span>
           <button @click="removeCategory(category)" class="remove-btn">Remove</button>
         </li>
       </ul>
 
+      <!-- Button to close the category overlay -->
       <button @click="closeOverlay" class="close-btn">Close</button>
     </div>
   </div>
 </template>
 
 <script>
+/**
+ * Category Component
+ * Manages the addition and removal of product categories in RetailHub.
+ */
 export default {
   props: {
+    /**
+     * Controls the visibility of the category overlay.
+     */
     show: {
       type: Boolean,
       default: false,
     },
+    /**
+     * List of existing categories.
+     */
     categories: {
       type: Array,
       default: () => [],
@@ -40,10 +68,17 @@ export default {
   },
   data() {
     return {
+      /**
+       * Holds the name of the new category to be added.
+       */
       newCategory: "",
     };
   },
   methods: {
+    /**
+     * Adds a new category by sending a POST request to the API.
+     * Emits the new category to the parent component upon successful addition.
+     */
     async addCategory() {
       if (this.newCategory.trim() !== "") {
         try {
@@ -75,16 +110,26 @@ export default {
         }
       }
     },
+
+    /**
+     * Removes an existing category by emitting an event to the parent component.
+     * @param {Object} category - The category object to be removed.
+     */
     removeCategory(category) {
-      console.log("Category to delete : ", category);
+      console.log("Category to delete:", category);
       this.$emit("removeCategory", category);
     },
+
+    /**
+     * Closes the category overlay by emitting a close event to the parent component.
+     */
     closeOverlay() {
       this.$emit("closeOverlay");
     },
   },
 };
 </script>
+
 
 <style scoped>
 .overlay {

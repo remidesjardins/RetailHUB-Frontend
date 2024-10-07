@@ -1,15 +1,36 @@
+<!--
+ * RetailHub - ClientSearchView.vue
+ *
+ * Participants:
+ * - Alexandre Borny
+ * - Maël Castellan
+ * - Laura Donato
+ * - Rémi Desjardins
+ *
+ * This component provides a user interface for searching and managing clients within RetailHub.
+ * Users can search for clients by various criteria, view the list of clients, and create new clients.
+ * Additionally, it includes navigation to invoice search and client detail pages.
+ -->
+
 <template>
   <div class="client-site">
+    <!-- Navigation Bar -->
     <NavBar/>
+
     <!-- Sidebar / Navbar -->
     <div class="top-section"></div>
+
+    <!-- Top Bar with Tab Buttons -->
     <div class="top-bar">
+      <!-- Client Tab Button -->
       <button
           :class="{ active: activeTab === 'client' }"
           @click="switchTab('client')"
       >
         Client
       </button>
+
+      <!-- Invoice Tab Button -->
       <button
           :class="{ active: activeTab === 'invoice' }"
           @click="switchTab('invoice')"
@@ -18,31 +39,40 @@
       </button>
     </div>
 
-    <!-- Main content -->
+    <!-- Main Content Area -->
     <div class="main-content">
-      <!-- Search Form -->
+      <!-- Search Form for Clients -->
       <div class="search-form">
         <form @submit.prevent="filteredClients">
+          <!-- Last Name Search Field -->
           <div>
             <label>
               Last Name
               <input type="text" v-model="search.lastName" class="custom-input"/>
             </label>
           </div>
+
+          <!-- First Name Search Field -->
           <div>
             <label>
               First Name
               <input type="text" v-model="search.firstName" class="custom-input"/>
             </label>
           </div>
+
           <p>Or</p>
+
+          <!-- Phone Number Search Field -->
           <div>
             <label>
               Phone Number
               <input type="text" v-model="search.phoneNumber" class="custom-input"/>
             </label>
           </div>
+
           <p>Or</p>
+
+          <!-- E-Mail Search Field -->
           <div>
             <label>
               E-Mail
@@ -52,29 +82,44 @@
         </form>
       </div>
 
-      <!-- Clients List -->
+      <!-- Clients List Display -->
       <div class="clients-list">
         <h3>Clients</h3>
-        <div v-if="filteredClients.length === 0">No clients found.</div>
-        <div v-for="client in filteredClients" :key="client.id" class="client-card" @click="goToClientPage(client._id)">
-          <div class="client-info">
-            <p class="client-name">{{ client.name }}</p>
-            <p>{{ client.address }}</p>
-          </div>
-          <div class="client-contact">
-            <p>{{ client.phone }}</p>
-            <p>{{ client.email }}</p>
+        <div class="clients-list-content">
+          <!-- Message when no clients are found -->
+          <div v-if="filteredClients.length === 0">No clients found.</div>
+
+          <!-- List of Client Cards -->
+          <div
+              v-for="client in filteredClients"
+              :key="client.id"
+              class="client-card"
+              @click="goToClientPage(client._id)"
+          >
+            <!-- Client Information Section -->
+            <div class="client-info">
+              <p class="client-name">{{ client.name }}</p>
+              <p>{{ client.address }}</p>
+            </div>
+
+            <!-- Client Contact Information -->
+            <div class="client-contact">
+              <p>{{ client.phone }}</p>
+              <p>{{ client.email }}</p>
+            </div>
           </div>
         </div>
+
+        <!-- Button to Open Create Client Overlay -->
         <button class="create-client-btn" @click="openCreateClient">Create client</button>
       </div>
     </div>
 
+    <!-- CreateClient Component Overlay -->
     <CreateClient
         v-if="showCreateClient"
         @close="closeCreateClient"
     />
-
   </div>
 </template>
 
@@ -87,20 +132,42 @@ export default {
     CreateClient,
     NavBar,
   },
+
   data() {
     return {
+      /**
+       * Currently active tab ('client' or 'invoice').
+       */
       activeTab: 'client',
+
+      /**
+       * Search criteria for filtering clients.
+       */
       search: {
         lastName: '',
         firstName: '',
         phoneNumber: '',
         email: '',
       },
+
+      /**
+       * Array of all clients fetched from the backend.
+       */
       clients: [],
+
+      /**
+       * Flag to control the visibility of the CreateClient overlay.
+       */
       showCreateClient: false,
     };
   },
+
   computed: {
+    /**
+     * Filters the list of clients based on the search criteria.
+     *
+     * @returns {Array} - Array of clients that match the search criteria.
+     */
     filteredClients() {
       return this.clients.filter((client) => {
         const matchesLastName = this.search.lastName === '' || client.name.toLowerCase().includes(this.search.lastName.toLowerCase());
@@ -112,7 +179,11 @@ export default {
       });
     }
   },
+
   methods: {
+    /**
+     * Fetches the initial list of clients from the backend API.
+     */
     fetchInitialClients() {
       const requestOptions = {
         method: "GET",
@@ -127,26 +198,57 @@ export default {
           .catch((error) => console.error(error));
     },
 
+    /**
+     * Switches the active tab between 'client' and 'invoice'.
+     *
+     * @param {string} tab - The tab to switch to ('client' or 'invoice').
+     */
     switchTab(tab) {
       this.activeTab = tab;
       if (tab === 'invoice') {
         this.$router.push({ name: 'InvoiceSearch' }); // Redirect to InvoiceSearchView
       }
     },
+
+    /**
+     * Normalizes a phone number by removing all non-digit characters.
+     *
+     * @param {string} phoneNumber - The phone number to normalize.
+     * @returns {string} - The normalized phone number containing only digits.
+     */
     normalizePhoneNumber(phoneNumber) {
-      // Enlever tous les caractères qui ne sont pas des chiffres
+      // Remove all non-digit characters
       return phoneNumber.replace(/\D/g, '');
     },
+
+    /**
+     * Opens the CreateClient overlay to allow the user to create a new client.
+     */
     openCreateClient() {
       this.showCreateClient = true;
     },
+
+    /**
+     * Closes the CreateClient overlay without saving changes.
+     */
     closeCreateClient() {
       this.showCreateClient = false;
     },
+
+    /**
+     * Navigates to the client detail page for the selected client.
+     *
+     * @param {string} clientId - The unique identifier of the client.
+     */
     goToClientPage(clientId) {
       this.$router.push(`/client/${clientId}`);
     },
   },
+
+  /**
+   * Lifecycle hook called when the component is mounted.
+   * Initiates fetching of client data.
+   */
   mounted() {
     this.fetchInitialClients();
   }
@@ -276,6 +378,11 @@ export default {
   width: 100%;
   max-width: 600px;
   margin-left: 20px; /* Ajoute un espace entre la search-form et la clients-list */
+}
+
+.clients-list-content{
+  overflow: scroll;
+  max-height: 600px;
 }
 
 .clients-list h3 {

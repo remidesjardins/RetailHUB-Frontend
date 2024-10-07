@@ -1,8 +1,22 @@
+<!--
+ * RetailHub - UpdateSaleForm.vue
+ *
+ * Participants:
+ * - Alexandre Borny
+ * - Maël Castellan
+ * - Laura Donato
+ * - Rémi Desjardins
+ *
+ * This component provides a form to update an existing sale's information,
+ * including customer details, total price, reference, and payment status.
+ -->
+
 <template>
   <div v-if="show" class="overlay">
     <div class="overlay-content">
       <h2>Update Sale</h2>
 
+      <!-- Form to update sale details -->
       <form @submit.prevent="updateSale">
         <!-- Customer Name -->
         <div class="form-group customer-row">
@@ -49,7 +63,7 @@
           </select>
         </div>
 
-        <!-- Submit Button -->
+        <!-- Submit and Close Buttons -->
         <div class="button-group">
           <button type="submit" class="submit-btn">Update Sale</button>
           <button type="button" class="close-btn" @click="closeOverlay">Close</button>
@@ -57,7 +71,13 @@
       </form>
     </div>
   </div>
-  <UpdateClient v-if="showClientOverlay" :client="sale.customer" @close="closeClientOverlay" @close-data="updateClientData"/>
+  <!-- UpdateClient component to modify customer details -->
+  <UpdateClient
+      v-if="showClientOverlay"
+      :client="sale.customer"
+      @close="closeClientOverlay"
+      @close-data="updateClientData"
+  />
 </template>
 
 <script>
@@ -65,22 +85,39 @@ import UpdateClient from "@/components/UpdateClient.vue";
 
 export default {
   components: { UpdateClient },
+
   props: {
+    /**
+     * The sale object containing current sale information.
+     * This prop is required for the component to function correctly.
+     */
     sale: {
       type: Object,
       required: true
     },
+    /**
+     * Determines whether the update sale overlay is visible.
+     */
     show: {
       type: Boolean,
       default: false
     }
   },
+
   data() {
     return {
+      /**
+       * Controls the visibility of the UpdateClient overlay.
+       */
       showClientOverlay: false
     };
   },
+
   methods: {
+    /**
+     * Sends an update request to the server with the modified sale information.
+     * Handles the response and potential errors.
+     */
     async updateSale() {
       try {
         const response = await fetch(`https://com.servhub.fr/api/sales/${this.sale._id}`, {
@@ -105,16 +142,34 @@ export default {
         alert("An error occurred while updating the sale.");
       }
     },
+
+    /**
+     * Opens the client modification overlay.
+     */
     openClientOverlay() {
       this.showClientOverlay = true;
     },
+
+    /**
+     * Closes the client modification overlay.
+     */
     closeClientOverlay() {
       this.showClientOverlay = false;
     },
+
+    /**
+     * Updates the sale's customer data with the modified client information.
+     *
+     * @param {Object} updatedClient - The updated client data.
+     */
     updateClientData(updatedClient) {
       this.sale.customer = updatedClient;
       this.closeClientOverlay();
     },
+
+    /**
+     * Closes the sale update overlay.
+     */
     closeOverlay() {
       this.$emit("closeOverlay");
     }

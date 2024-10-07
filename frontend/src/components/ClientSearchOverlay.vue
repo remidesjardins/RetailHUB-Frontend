@@ -1,40 +1,79 @@
+<!--
+  =====================================================
+  Project: RetailHub
+  File: ClientSearchOverlay.vue
+  Description: Component for searching and managing clients within RetailHub.
+  Participants:
+    - Alexandre Borny
+    - Maël Castellan
+    - Laura Donato
+    - Rémi Desjardins
+  =====================================================
+-->
+
 <template>
+  <!-- Overlay container to darken the background and focus on the client search modal -->
   <div class="overlay-container">
     <div class="overlay">
-      <button class="close-button" @click="closeClientSearch"><i class="fa-solid fa-xmark"></i></button>
+      <!-- Close button to exit the client search overlay -->
+      <button class="close-button" @click="closeClientSearch">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
 
       <!-- Main Content inside Overlay -->
       <div class="main-content">
-        <!-- Search Form -->
+        <!-- Search Form for filtering clients -->
         <div class="search-form">
           <form @submit.prevent="filteredClients">
+            <!-- Last Name Input Field -->
             <div class="form-group">
               <label>Last Name</label>
               <input type="text" v-model="search.lastName" class="custom-input"/>
             </div>
+
+            <!-- First Name Input Field -->
             <div class="form-group">
               <label>First Name</label>
               <input type="text" v-model="search.firstName" class="custom-input"/>
             </div>
+
+            <!-- Separator Text -->
             <p class="separator">Or</p>
+
+            <!-- Phone Number Input Field -->
             <div class="form-group">
               <label>Phone Number</label>
               <input type="text" v-model="search.phoneNumber" class="custom-input"/>
             </div>
+
+            <!-- Separator Text -->
             <p class="separator">Or</p>
+
+            <!-- E-Mail Input Field -->
             <div class="form-group">
               <label>E-Mail</label>
               <input type="text" v-model="search.email" class="custom-input"/>
             </div>
+
+            <!-- Submit Button for Search Form -->
             <button type="submit" class="submit-btn">Search</button>
           </form>
         </div>
 
-        <!-- Clients List -->
+        <!-- Clients List Display -->
         <div class="clients-list">
           <h3>Clients</h3>
+
+          <!-- Message displayed when no clients are found -->
           <div v-if="filteredClients.length === 0">No clients found.</div>
-          <div v-for="client in filteredClients" :key="client.id" class="client-card" @click="chooseClient(client)">
+
+          <!-- Loop through filtered clients and display each client -->
+          <div
+              v-for="client in filteredClients"
+              :key="client.id"
+              class="client-card"
+              @click="chooseClient(client)"
+          >
             <div class="client-info">
               <p class="client-name">{{ client.name }}</p>
               <p>{{ client.address }}</p>
@@ -44,11 +83,13 @@
               <p>{{ client.email }}</p>
             </div>
           </div>
+
+          <!-- Button to open the Create Client modal -->
           <button class="create-client-btn" @click="openCreateClient">Create client</button>
         </div>
       </div>
 
-      <!-- Create Client Modal -->
+      <!-- Create Client Modal Component -->
       <CreateClient
           v-if="showCreateClient"
           @close="closeCreateClient"
@@ -58,6 +99,10 @@
 </template>
 
 <script>
+/**
+ * ClientSearchOverlay Component
+ * Provides functionality to search, view, and manage clients within RetailHub.
+ */
 import NavBar from "@/components/NavBar.vue";
 import CreateClient from "@/components/CreateClient.vue";
 
@@ -68,34 +113,69 @@ export default {
   },
   data() {
     return {
+      /**
+       * Currently active tab in the overlay (if applicable).
+       */
       activeTab: 'client',
+
+      /**
+       * Object holding the search criteria entered by the user.
+       */
       search: {
         lastName: '',
         firstName: '',
         phoneNumber: '',
         email: '',
       },
+
+      /**
+       * Array storing all clients fetched from the API.
+       */
       clients: [],
+
+      /**
+       * Boolean flag to control the visibility of the Create Client modal.
+       */
       showCreateClient: false,
     };
   },
   computed: {
+    /**
+     * Filters the list of clients based on the search criteria.
+     * @returns {Array} An array of clients that match the search criteria.
+     */
     filteredClients() {
       return this.clients.filter((client) => {
-        const matchesLastName = this.search.lastName === '' || client.name.toLowerCase().includes(this.search.lastName.toLowerCase());
-        const matchesFirstName = this.search.firstName === '' || client.name.toLowerCase().includes(this.search.firstName.toLowerCase());
-        const matchesPhone = this.search.phoneNumber === '' || this.normalizePhoneNumber(client.phone).includes(this.normalizePhoneNumber(this.search.phoneNumber));
-        const matchesEmail = this.search.email === '' || client.email.toLowerCase().includes(this.search.email.toLowerCase());
+        const matchesLastName =
+            this.search.lastName === '' ||
+            client.name.toLowerCase().includes(this.search.lastName.toLowerCase());
+
+        const matchesFirstName =
+            this.search.firstName === '' ||
+            client.name.toLowerCase().includes(this.search.firstName.toLowerCase());
+
+        const matchesPhone =
+            this.search.phoneNumber === '' ||
+            this.normalizePhoneNumber(client.phone).includes(
+                this.normalizePhoneNumber(this.search.phoneNumber)
+            );
+
+        const matchesEmail =
+            this.search.email === '' ||
+            client.email.toLowerCase().includes(this.search.email.toLowerCase());
 
         return matchesLastName && matchesFirstName && matchesPhone && matchesEmail;
       });
-    }
+    },
   },
   methods: {
+    /**
+     * Fetches the initial list of clients from the API when the component is mounted.
+     */
     fetchInitialClients() {
       const requestOptions = {
         method: "GET",
-        redirect: "follow"
+        redirect: "follow",
       };
 
       fetch("https://com.servhub.fr/api/customers/", requestOptions)
@@ -103,27 +183,51 @@ export default {
           .then((result) => {
             this.clients = result;
           })
-          .catch((error) => console.error(error));
+          .catch((error) => console.error("Error fetching clients:", error));
     },
+
+    /**
+     * Normalizes a phone number by removing all non-digit characters.
+     * @param {string} phoneNumber - The phone number to normalize.
+     * @returns {string} The normalized phone number containing only digits.
+     */
     normalizePhoneNumber(phoneNumber) {
       return phoneNumber.replace(/\D/g, '');
     },
+
+    /**
+     * Opens the Create Client modal by setting the corresponding flag to true.
+     */
     openCreateClient() {
       this.showCreateClient = true;
     },
+
+    /**
+     * Closes the Create Client modal by setting the corresponding flag to false.
+     */
     closeCreateClient() {
       this.showCreateClient = false;
     },
+
+    /**
+     * Closes the Client Search overlay by emitting a 'close' event to the parent component.
+     */
     closeClientSearch() {
       this.$emit("close");
     },
+
+    /**
+     * Selects a client and emits the selected client's data to the parent component.
+     * @param {Object} client - The client object that was selected.
+     */
     chooseClient(client) {
       this.$emit("close-data", client);
     },
   },
   mounted() {
+    // Fetch the initial list of clients when the component is mounted
     this.fetchInitialClients();
-  }
+  },
 };
 </script>
 

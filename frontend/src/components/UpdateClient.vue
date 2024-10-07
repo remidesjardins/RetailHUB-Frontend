@@ -1,8 +1,24 @@
+<!--
+ * RetailHub - UpdateCliant.vue
+ *
+ * Participants:
+ * - Alexandre Borny
+ * - Maël Castellan
+ * - Laura Donato
+ * - Rémi Desjardins
+ *
+ * This component provides a form to modify an existing client's information in RetailHub.
+ -->
+
 <template>
   <div class="overlay">
     <div class="overlay-content">
+      <!-- Close button to hide the overlay -->
       <button class="close-button" @click="closeOverlay">✖</button>
+
       <h1>Modify Client</h1>
+
+      <!-- Form to update client information -->
       <form @submit.prevent="updateClient">
         <div class="form-group">
           <label for="name">Last Name</label>
@@ -20,9 +36,12 @@
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="address">Address</label>
-          <textarea id="address" placeholder="Address" v-model="client.address" required></textarea>
+        <div class="form-group form-group-address">
+          <input type="text" placeholder="Street" v-model="client.addressLine1" required />
+          <input type="text" placeholder="City" v-model="client.city" required />
+          <input type="text" placeholder="State" v-model="client.state" required />
+          <input type="text" placeholder="Postal Code" v-model="client.postalCode" required />
+          <input type="text" placeholder="Country" v-model="client.country" class="full-width" required />
         </div>
 
         <button type="submit" class="update-client-button">Modify Client</button>
@@ -34,46 +53,78 @@
 <script>
 export default {
   props: {
-    client: undefined,  // Les données reçues du parent
+    /**
+     * The client object containing current client information.
+     * This prop is required for the component to function correctly.
+     */
+    client: {
+      type: Object,
+      required: true,
+    },
   },
+
   methods: {
+    /**
+     * Closes the overlay without saving any changes.
+     * Emits a 'close' event to notify the parent component.
+     */
     closeOverlay() {
       this.$emit('close');
     },
+
+    /**
+     * Sends an update request to the server with the modified client information.
+     * Handles the response and potential errors.
+     */
     updateClient() {
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
 
-      const row = JSON.stringify({
+      const updatedClientData = JSON.stringify({
         name: this.client.name,
         email: this.client.email,
         phone: this.client.phone,
-        address: this.client.address
+        address: {
+          addressLine1: this.client.addressLine1,
+          city: this.client.city,
+          state: this.client.state,
+          postalCode: this.client.postalCode,
+          country: this.client.country,
+        },
       });
 
       const requestOptions = {
         headers: myHeaders,
         method: "PUT",
-        body: row,
+        body: updatedClientData,
         redirect: "follow"
       };
+
       fetch(`https://com.servhub.fr/api/customers/${this.client._id}`, requestOptions)
           .then((response) => {
-            response.json();
-            console.log("Response:", response.body);
+            if (!response.ok) {
+              return response.json().then((error) => {
+                throw new Error(error.message);
+              });
+            }
+            return response.json();
           })
           .then((result) => {
-            console.log(result);
-            this.closeOverlayWithData()
+            this.closeOverlayWithData();
           })
-          .catch((error) => console.error(error));
+          .catch((error) => {
+            alert(`Error updating client: ${error.message}`);
+          });
     },
+
+    /**
+     * Closes the overlay and emits the updated client data to the parent component.
+     */
     closeOverlayWithData() {
       this.$emit('close-data', this.client);
     },
   },
 };
-
 </script>
 
 <style scoped>
@@ -118,7 +169,16 @@ h1 {
 }
 
 .form-group {
-  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.form-group-address {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
 .form-group label {

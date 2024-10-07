@@ -1,6 +1,22 @@
+<!--
+  =====================================================
+  Project: RetailHub
+  File: PlaceProductForm.vue
+  Description: Component for placing a product by assigning it to a specific slot within RetailHub.
+  Participants:
+    - Alexandre Borny
+    - Maël Castellan
+    - Laura Donato
+    - Rémi Desjardins
+  =====================================================
+-->
+
 <template>
+  <!-- Overlay container to focus on the Place Product form -->
   <div class="overlay">
+    <!-- Form container for placing a product -->
     <div class="place-product-form">
+      <!-- Form header with title and close button -->
       <div class="form-header">
         <h2>Place Product</h2>
         <button @click="$emit('close')" class="close-btn">
@@ -8,23 +24,37 @@
         </button>
       </div>
 
+      <!-- Form for placing the product -->
       <form @submit.prevent="placeProduct">
-        <!-- SKU Code -->
+        <!-- Row for SKU Code input -->
         <div class="form-row">
           <div class="form-group">
             <label for="sku">SKU Code</label>
-            <input type="text" id="sku" v-model="placement.SKU" placeholder="Enter SKU Code" required />
+            <input
+                type="text"
+                id="sku"
+                v-model="placement.SKU"
+                placeholder="Enter SKU Code"
+                required
+            />
           </div>
         </div>
 
-        <!-- Slot Code -->
+        <!-- Row for Slot Code input -->
         <div class="form-row">
           <div class="form-group">
             <label for="slotCode">Slot Code</label>
-            <input type="text" id="slotCode" v-model="placement.slotCode" placeholder="Enter Slot Code" required />
+            <input
+                type="text"
+                id="slotCode"
+                v-model="placement.slotCode"
+                placeholder="Enter Slot Code"
+                required
+            />
           </div>
         </div>
 
+        <!-- Submit button to place the product -->
         <button type="submit" class="submit-btn">Place Product</button>
       </form>
     </div>
@@ -32,28 +62,43 @@
 </template>
 
 <script>
+/**
+ * PlaceProductForm Component
+ * Provides a form for assigning a product to a specific slot within RetailHub.
+ */
 export default {
   data() {
     return {
+      /**
+       * Object holding the placement details entered by the user.
+       * @type {Object}
+       * @property {string} SKU - The Stock Keeping Unit code of the product.
+       * @property {string} slotCode - The code of the slot where the product will be placed.
+       */
       placement: {
         SKU: '',
-        slotCode: ''
-      }
+        slotCode: '',
+      },
     };
   },
   methods: {
+    /**
+     * Handles the form submission to place the product.
+     * Validates input fields, sends a PUT request to update the product's slot,
+     * and provides user feedback based on the API response.
+     */
     async placeProduct() {
-      // Ensure that SKU and Slot Code values are provided
+      // Validate that both SKU and Slot Code are provided
       if (!this.placement.SKU || !this.placement.slotCode) {
-        alert("Please fill in both SKU Code and Slot Code.");
+        window.alert("Please fill in both SKU Code and Slot Code.");
         return;
       }
 
       try {
         // Prepare the data for placing the product
         const placementData = {
-          SKU: this.placement.SKU,
-          Slot: this.placement.slotCode,
+          SKU: this.placement.SKU.trim(),
+          Slot: this.placement.slotCode.trim(),
         };
 
         // Make the API call to update the Slot Code for the product
@@ -68,19 +113,19 @@ export default {
         // Handle the response from the server
         if (response.ok) {
           const result = await response.json();
-          alert(`Product placed successfully with Slot Code: ${this.placement.slotCode}`);
+          window.alert(`Product placed successfully with Slot Code: ${this.placement.slotCode}`);
           console.log('Product placement response:', result);
-          this.$emit('close');  // Close the form after successful submission
+          this.$emit('close'); // Close the form after successful submission
         } else {
           const errorData = await response.json();
-          alert(`Error placing product: ${errorData.message}`);
+          window.alert(`Error placing product: ${errorData.message}`);
         }
       } catch (error) {
         console.error('Error during product placement:', error);
-        alert('An error occurred while placing the product.');
+        window.alert('An error occurred while placing the product.');
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
