@@ -34,8 +34,7 @@
         >
           <!-- Display product name and SKU -->
           <div class="alert-product">
-            <h3>{{ alert.name }}</h3>
-            <p>{{ alert.SKU }}</p>
+            <h3>{{ alert.ref_product }}</h3>
           </div>
 
           <!-- Display reason for restocking -->
@@ -86,14 +85,14 @@ export default {
 
       try {
 
-        const requestOptions = {
+        const requestOptions2 = {
           method: "POST",
           redirect: "follow"
         };
 
-        await fetch("https://com.servhub.fr/api/alerts/ai", requestOptions)
-            .then(() => {
-              console.log("Fetching ia prediction successfully")})
+        await fetch("https://com.servhub.fr/api/alerts/ai", requestOptions2)
+            .then((res) => {
+              console.log("Fetching ia prediction successfully", res)})
             .catch(err => {
               console.log(err)})
 
@@ -101,6 +100,7 @@ export default {
         const result = await response.json();
         console.log("Fetched Restock Alerts:", result);
         this.restockAlerts = result;
+        console.log("Alerts: ", this.restockAlerts);
       } catch (error) {
         console.error("Error fetching restock alerts:", error);
       }
@@ -146,7 +146,6 @@ export default {
    */
   mounted() {
 
-    this.
     this.fetchGetAlert();
 
   },
@@ -154,5 +153,7 @@ export default {
 </script>
 
 <style scoped>
-
+.overlay-restock-alert {
+  margin-left: 60px;
+}
 </style>

@@ -66,7 +66,7 @@ export default {
      * Displays a notification alert when the notification icon is clicked.
      */
     notifyFunction() {
-      alert('Notification center clicked!');
+      this.$router.push({name: "Alert"});
     },
 
     /**
