@@ -85,6 +85,18 @@ export default {
       };
 
       try {
+
+        const requestOptions = {
+          method: "POST",
+          redirect: "follow"
+        };
+
+        await fetch("https://com.servhub.fr/api/alerts/ai", requestOptions)
+            .then(() => {
+              console.log("Fetching ia prediction successfully")})
+            .catch(err => {
+              console.log(err)})
+
         const response = await fetch("https://com.servhub.fr/api/alerts/", requestOptions);
         const result = await response.json();
         console.log("Fetched Restock Alerts:", result);
@@ -93,6 +105,7 @@ export default {
         console.error("Error fetching restock alerts:", error);
       }
     },
+
 
     /**
      * Deletes a specific restock alert by its ID.
@@ -132,7 +145,10 @@ export default {
    * Initiates the fetching of restock alerts.
    */
   mounted() {
+
+    this.
     this.fetchGetAlert();
+
   },
 };
 </script>
