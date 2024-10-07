@@ -111,7 +111,7 @@ export default {
 
       // Get the current year and adjust the current week
       const currentYear = new Date().getFullYear();
-      const currentWeek = this.getCurrentWeek() - 2; // Adjust as needed
+      const currentWeek = this.getCurrentWeek(); // Adjust as needed
       console.log("Current Week:", currentWeek);
 
       // Construct the API URL based on the selected time frame
@@ -150,7 +150,8 @@ export default {
                   sum += sale.total_price;
                 });
                 this.chartData.push(sum);
-              });
+              }
+              );
             }
 
             if (weeks) {
@@ -158,8 +159,11 @@ export default {
               this.chartLabel = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
               this.chartData = [0, 0, 0, 0, 0, 0, 0];
               const body = data[0];
+
               body.sales.forEach(sale => {
                 const saleDate = new Date(sale.sale_date);
+                saleDate.setHours(12, 0, 0, 0);
+
                 const dayOfWeek = saleDate.toLocaleString('fr-FR', { weekday: 'long' });
                 const index = this.chartLabel.indexOf(dayOfWeek);
                 if (index !== -1) {
@@ -167,6 +171,7 @@ export default {
                 }
               });
             }
+
           })
           .catch(error => console.error('Error fetching data:', error));
     },
@@ -254,10 +259,9 @@ canvas {
   border-radius: 20px;
 }
 .chart-wrapper {
-  width: 50%; /* Ajuste la largeur du div pour le redimensionner */
-  aspect-ratio: 2 / 1; /* Garde le ratio 2:1, tu peux ajuster selon le graphique */
-  max-width: 600px; /* Limite la taille maximale */
-  max-height: 300px; /* Limite la hauteur maximale */
+  width: 100%;
+  max-width: 600px;
+  height: 300px; /* Set a fixed height */
   display: flex;
   justify-content: center;
   align-items: center;
