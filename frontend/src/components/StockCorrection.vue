@@ -97,13 +97,10 @@ export default {
 
         const product = await response.json();
 
-        // Calculate the updated stock by applying the adjustment
-        const updatedStock = product.Current_stock + Number(this.correction.adjustment);
-
         // Prepare the data payload for the stock correction
         const stockCorrectionData = {
           SKU: this.correction.SKU,
-          Current_stock: updatedStock,
+          Current_stock: this.correction.adjustment,
         };
 
         // Send a PUT request to update the product's stock on the server
