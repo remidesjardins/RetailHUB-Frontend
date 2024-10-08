@@ -202,7 +202,7 @@ export default {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 14rem;
   position: relative;
-  left: 35%;
+  margin-left: 37vw;
   border-radius: 1.5rem;
 }
 

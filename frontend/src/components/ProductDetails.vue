@@ -434,7 +434,7 @@ h1 {
 
 .cart-btn {
   padding: .625rem .938rem;
-  background-color: #f0f0f0;
+  background-color: darkgray;
   border: none;
   color: white;
   font-size: 1rem;
@@ -446,7 +446,7 @@ h1 {
 }
 
 .cart-btn:hover {
-  background-color: darkgray;
+  background-color: #737272;
 }
 
 /* Keyframes for bounce animation */

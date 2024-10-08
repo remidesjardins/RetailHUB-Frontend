@@ -41,32 +41,27 @@
                 <img :src="product.product.Image" alt="Product image" />
 
                 <div class="item-details">
-                  <div class="items">
-                    <div class="details-left">
-                      <!-- Product Name -->
-                      <h3>{{ product.product.name }}</h3>
-                      <!-- Product SKU -->
-                      <p>{{ product.product.SKU }}</p>
-                    </div>
+                  <div class="details-left">
+                    <!-- Product Name -->
+                    <h3>{{ product.product.name }}</h3>
+                    <!-- Product SKU -->
+                    <p>{{ product.product.SKU }}</p>
+                  </div>
 
+                  <div class="details-right">
                     <!-- Quantity Selector -->
                     <div class="quantity-selector">
                       <button @click="decreaseQuantity(index, product)">-</button>
                       <span>{{ product.quantity }}</span>
                       <button @click="increaseQuantity(index, product)">+</button>
-
                     </div>
                     <span>
-                      <!-- Total Price for the Product -->
-                    $ {{ (product.product.price * product.quantity).toFixed(2) }}
-                    </span>
-
-                  </div>
-
-                  <span>
+      <!-- Total Price for the Product -->
+      $ {{ (product.product.price * product.quantity).toFixed(2) }}
+    </span>
                     <!-- Trash Icon to Remove Product from Cart -->
                     <i class="fa-solid fa-trash" @click="deleteProductFromCart(product)"></i>
-                  </span>
+                  </div>
                 </div>
               </div>
             </transition-group>
@@ -658,7 +653,8 @@ h2 {
 /* Individual Cart Item styling */
 .cart-item {
   display: flex;
-  justify-content: space-between;
+  min-width: 100%;
+  justify-content: flex-end;
   align-items: center;
   padding: .938rem;
   border-radius: 1.563rem;
@@ -679,12 +675,12 @@ h2 {
   padding: .938rem;
   display: flex;
   justify-content: space-between;
-  align-items: center;
   background-color: white; /* White background for details */
   border-radius: 1.563rem;
   margin-right: 1.25rem; /* Space between details and options */
-  max-width: 28rem;
-  min-width: 28rem;
+  margin-left: 1.25rem; /* Ajouter de l'espace entre l'image et les détails */
+  max-width: 80%;
+  min-width: 80%;
   position: relative;
   right: 0.5rem;
 }
@@ -700,13 +696,19 @@ h2 {
 }
 
 /* Left side of Item Details (Name and SKU) */
-.item-details .details-left {
+.details-left {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  flex-grow: 1;
-  max-width: 11rem;
-  min-width: 11rem;
+  margin-right: auto; /* Pushes the right details to the right */
+  max-width: 50%; /* Adjust as needed */
+}
+
+/* Right-aligned details (Quantity, Price, and Trash Icon) */
+.details-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* Aligns content to the right */
+  gap: 1rem; /* Adds spacing between quantity, price, and trash icon */
 }
 
 /* Quantity Selector styling */
@@ -743,7 +745,7 @@ h2 {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  width: 11rem;
+  width: 12rem;
 }
 
 /* Product SKU styling */

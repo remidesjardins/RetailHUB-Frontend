@@ -22,7 +22,7 @@
     <div class="invoice-container">
       <!-- Loop through sales to display each invoice -->
       <div
-          v-for="(sale, index) in (sales.length ? sales.slice().reverse() : Array(10).fill({}))"
+          v-for="(sale, index) in (sales.length ? sales.slice().reverse() : Array(1).fill({}))"
           :key="sale._id || index"
           class="invoice-card"
       >
