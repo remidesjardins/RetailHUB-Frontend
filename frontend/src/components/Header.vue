@@ -64,18 +64,30 @@ export default {
 </script>
 
 <style scoped>
+
 .header {
   display: flex;
   justify-content: space-between;
-  padding: 10px;
+  padding: .625rem;
   background-color: white;
 }
+
 .search-bar input {
-  padding: 10px;
-  font-size: 16px;
-  width: 300px;
+  padding: .625rem;
+  font-size: 1rem;
+  width: 18.75rem;
 }
+
 .icons {
-  font-size: 24px;
+  font-size: 1.5rem;
+  position: relative;
+  top: 0.6rem;
+  cursor: pointer;
+  margin: 0 2rem 0 1rem;
 }
+
+.icons:hover {
+  color: #274156;
+}
+
 </style>

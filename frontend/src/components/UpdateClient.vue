@@ -21,7 +21,7 @@
       <!-- Form to update client information -->
       <form @submit.prevent="updateClient">
         <div class="form-group">
-          <label for="name">Last Name</label>
+          <label for="name">Name</label>
           <input type="text" id="name" v-model="client.name" required/>
         </div>
 
@@ -37,11 +37,16 @@
         </div>
 
         <div class="form-group form-group-address">
-          <input type="text" placeholder="Street" v-model="client.addressLine1" required />
-          <input type="text" placeholder="City" v-model="client.city" required />
-          <input type="text" placeholder="State" v-model="client.state" required />
-          <input type="text" placeholder="Postal Code" v-model="client.postalCode" required />
-          <input type="text" placeholder="Country" v-model="client.country" class="full-width" required />
+          <div>
+            <label for="address">Address</label>
+            <input type="text" placeholder="Street" v-model="client.addressLine1" required />
+          </div>
+          <div class="input-address">
+            <input type="text" placeholder="City" v-model="client.city" required />
+            <input type="text" placeholder="State" v-model="client.state" required />
+            <input type="text" placeholder="Postal Code" v-model="client.postalCode" required />
+            <input type="text" placeholder="Country" v-model="client.country" class="full-width" required />
+          </div>
         </div>
 
         <button type="submit" class="update-client-button">Modify Client</button>
@@ -143,9 +148,9 @@ export default {
 
 .overlay-content {
   background: white;
-  padding: 30px;
-  border-radius: 20px;
-  width: 400px;
+  padding: 1.875rem;
+  border-radius: 1.25rem;
+  width: 25rem;
   max-width: 90%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   position: relative;
@@ -153,53 +158,52 @@ export default {
 
 .close-button {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: .625rem;
+  right: .625rem;
   background: none;
   border: none;
-  font-size: 20px;
+  font-size: 1.25rem;
   cursor: pointer;
+  color: grey;
 }
 
 h1 {
   text-align: center;
-  margin-bottom: 20px;
-  font-size: 24px;
+  margin-bottom: 1.25rem;
+  font-size: 1.5rem;
   color: #333;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
 }
 
 .form-group-address {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  display: flex;
+  gap: .625rem;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: .313rem;
   font-weight: bold;
 }
 
 .form-group input,
 .form-group textarea {
   width: 100%;
-  padding: 10px;
+  padding: .625rem;
   border: 1px solid #ccc;
-  border-radius: 25px;
-  font-size: 16px;
+  border-radius: 1.563rem;
+  font-size: 1rem;
 }
 
 .form-inline {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
+  gap: .625rem;
 }
 
 .form-inline div {
@@ -208,22 +212,29 @@ h1 {
 
 .form-group textarea {
   resize: none;
-  height: 80px;
+  height: 5rem;
+}
+
+.input-address {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .625rem;
+
 }
 
 .update-client-button {
   width: 100%;
-  padding: 10px;
-  background-color: #4CAF50;
+  padding: .625rem;
+  background-color: #80cbc4;
   border: none;
   color: white;
-  border-radius: 25px;
+  border-radius: 1.563rem;
   cursor: pointer;
-  font-size: 14px;
+  font-size: .875rem;
   transition: background-color 0.3s ease;
 }
 
 .update-client-button:hover {
-  background-color: #45a049;
+  background-color: #5d8f8d;
 }
 </style>

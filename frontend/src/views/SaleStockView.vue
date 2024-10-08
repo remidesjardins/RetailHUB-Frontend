@@ -25,7 +25,7 @@
       <!-- Product List Display -->
       <ProductList
           :productList="filteredProducts"
-          :text="'Recent Products'"
+          :text="'Recent Products'" id="product-list-text"
           :isEmpty="isEmpty"
           @productSelected="showProductDetailsOverlay"
       />
@@ -197,8 +197,13 @@ export default {
 </script>
 
 <style scoped>
+
+#product-list-text {
+  margin: 1rem 0;
+}
+
 .home-container {
-  margin-left: 60px;
+  margin-left: 3.75rem;
   max-width: 100vw;
   flex-wrap: nowrap;
   overflow-x: auto;
@@ -206,17 +211,15 @@ export default {
   height: 100vh;
 }
 
-
 .content {
-  margin-left: 20px;
+  margin-left: 1.25rem;
   flex-grow: 1;
-  padding: 20px;
+  padding: 1.25rem;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  gap: 20px;
+  gap: 1.25rem;
   height: 100%; /* Ensure the content takes full height */
 }
-
 
 </style>s

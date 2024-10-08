@@ -256,6 +256,13 @@ export default {
 </script>
 
 <style scoped>
+
+form p {
+  margin: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
 .client-site {
   display: flex;
   height: 100vh;
@@ -268,7 +275,7 @@ export default {
   flex-direction: row;
   justify-content: space-evenly;
   align-items: center;
-  padding: 20px;
+  padding: 1.25rem;
   width: 100%;
 }
 
@@ -284,36 +291,37 @@ export default {
   flex-direction: row;
   justify-content: space-evenly;
   align-items: center;
-  padding: 20px;
+  padding: 1.25rem;
   width: 100%;
+  margin-left: 3rem;
 }
 
 .top-bar {
   display: flex;
   justify-content: center; /* Center the buttons horizontally */
   position: absolute;
-  border-radius: 30px;
+  border-radius: 1.5rem;
   background-color: #fafafa;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 5px 3px;
-  top: 20px;
+  padding: .625rem 0;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
   z-index: 100;
 }
 
 .top-bar button {
-  padding: 12px 24px;
+  padding: .75rem 1.5rem;
   border: none;
-  border-radius: 30px; /* Make the button rounded */
+  border-radius: 1.875rem; /* Make the button rounded */
   background-color: #f0f0f0; /* Light grey background */
   cursor: pointer;
-  margin: 0 10px;
-  font-size: 16px;
+  margin: 0 .625rem;
+  font-size: 1rem;
   color: #333;
   transition: background-color 0.3s ease;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3); /* Add subtle shadow */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Add subtle shadow */
 }
 
 .top-bar button.active {
@@ -327,35 +335,35 @@ export default {
 .search-form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  max-width: 300px; /* Assurez-vous que la largeur ne dépasse pas trop */
+  gap: .625rem;
+  max-width: 18.75rem; /* Assurez-vous que la largeur ne dépasse pas trop */
 }
 
 .search-form div{
-  margin-top: 10px;
+  margin-top: .625rem;
 }
 
 .search-form label {
-  font-size: 18px;
-  margin: 5px;
+  font-size: 1.125rem;
+  margin: .313rem;
 }
 
 .search-form input {
-  padding: 12px;
-  border-radius: 5px;
+  padding: .75rem;
+  border-radius: 1.5rem;
   border: 1px solid #ccc;
   width: 100%;
 }
 .search-form {
   flex-grow: 1;
-  margin: 0 20px;
+  margin: 0 1.25rem;
 }
 .search-bar input {
   width: 90%;
-  padding: 10px;
-  font-size: 16px;
+  padding: .625rem;
+  font-size: 1rem;
   border: 2px solid black;
-  border-radius: 30px;
+  border-radius: 1.875rem;
   background: white;
 }
 .search-bar input::placeholder {
@@ -363,97 +371,101 @@ export default {
 }
 
 .custom-input {
-  border-radius: 10px;
+  border-radius: .625rem;
   transition: box-shadow 0.3s ease;
 }
 
 .custom-input:focus {
-  box-shadow: 0px 0px 10px rgba(0, 123, 255, 0.5);
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
 }
 
 .clients-list {
   background-color: #e0f7fa;
-  padding: 20px;
-  border-radius: 15px;
+  padding: 1.25rem;
+  border-radius: .938rem;
   width: 100%;
-  max-width: 600px;
-  margin-left: 20px; /* Ajoute un espace entre la search-form et la clients-list */
+  max-width: 37.5rem;
+  margin-left: 1.25rem; /* Ajoute un espace entre la search-form et la clients-list */
+  height: 25rem;
 }
 
 .clients-list-content{
   overflow: scroll;
-  max-height: 600px;
+  max-height: 20rem;
 }
 
 .clients-list h3 {
-  font-size: 24px;
-  margin-bottom: 20px;
+  font-size: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .client-card {
   display: flex;
   justify-content: space-between;
   align-items: stretch; /* Assure que les hauteurs de .client-info et .client-contact soient les mêmes */
-  padding: 15px;
-  margin-bottom: 15px;
+  padding: .938rem;
+  margin-bottom: .938rem;
 }
 
 .client-info {
   flex: 2;
   background-color: white;
-  border-radius: 10px;
-  padding: 15px;
-  margin-right: 20px;
+  border-radius: 1.5rem;
+  padding: .938rem;
+  margin-right: 1.25rem;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column; /* Aligne le contenu verticalement */
   justify-content: center; /* Centre le contenu verticalement */
+  cursor: pointer;
 }
 
 .client-info .client-name {
   font-weight: bold;
-  margin-bottom: 5px;
-  font-size: 18px;
+  margin-bottom: .313rem;
+  font-size: 1.125rem;
 }
 
 .client-contact {
   flex: 1;
   background-color: white;
-  border-radius: 10px;
-  padding: 15px;
+  border-radius: 1.5rem;
+  padding: .938rem;
   text-align: center;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column; /* Aligne le contenu verticalement */
   justify-content: center; /* Centre le contenu verticalement */
+  cursor: pointer;
 }
 
 .client-contact p {
-  margin: 5px 0;
-  font-size: 14px;
+  margin: .313rem 0;
+  font-size: .875rem;
 }
 
 .create-client-btn {
   background-color: #80cbc4;
   border: none;
-  padding: 12px 24px;
-  border-radius: 25px;
+  padding: .75rem 1.5rem;
+  border-radius: 1.563rem;
   color: white;
   cursor: pointer;
-  margin-top: 20px;
+  margin-top: 1.25rem;
   align-self: flex-end;
   transition: background-color 0.3s ease;
 }
 
 .create-client-btn:hover {
-  background-color: #4caf50;
+  background-color: #3b5998;
 }
+
 .search-bar{
   width: 100%;
 }
 .search-bar input {
-  padding: 10px;
-  font-size: 16px;
-  width: 300px;
+  padding: .625rem;
+  font-size: 1rem;
+  width: 18.75rem;
 }
 </style>

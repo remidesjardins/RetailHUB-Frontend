@@ -256,12 +256,12 @@ export default {
 }
 
 canvas {
-  border-radius: 20px;
+  border-radius: 1.25rem;
 }
 .chart-wrapper {
   width: 100%;
-  max-width: 600px;
-  height: 300px; /* Set a fixed height */
+  max-width: 37.5rem;
+  height: 18.75rem; /* Set a fixed height */
   display: flex;
   justify-content: center;
   align-items: center;

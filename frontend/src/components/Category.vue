@@ -16,7 +16,12 @@
   <div v-if="show" class="overlay">
     <div class="overlay-content">
       <!-- Header for managing categories -->
-      <h3>Manage Categories</h3>
+      <div class="form-header">
+        <h3>Manage Categories</h3>
+        <button @click="closeOverlay" class="close-btn">
+          <i class="fa-solid fa-xmark fa-xl"></i>
+        </button>
+      </div>
 
       <!-- Form to add a new category -->
       <form @submit.prevent="addCategory">
@@ -38,8 +43,6 @@
         </li>
       </ul>
 
-      <!-- Button to close the category overlay -->
-      <button @click="closeOverlay" class="close-btn">Close</button>
     </div>
   </div>
 </template>
@@ -132,6 +135,15 @@ export default {
 
 
 <style scoped>
+
+h3 {
+  margin-bottom: 1rem;
+}
+
+h4 {
+  margin: 0.5rem 0;
+}
+
 .overlay {
   position: fixed;
   top: 0;
@@ -147,9 +159,9 @@ export default {
 
 .overlay-content {
   background: white;
-  padding: 20px;
-  border-radius: 20px;
-  width: 400px;
+  padding: 1.25rem;
+  border-radius: 1.25rem;
+  width: 25rem;
   max-width: 90%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   max-height: 100%;
@@ -157,62 +169,70 @@ export default {
   flex-direction: column;
 }
 
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .input-field {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
+  padding: .625rem;
   border: 1px solid #ccc;
-  border-radius: 25px;
-  font-size: 16px;
+  border-radius: 1.563rem;
+  font-size: 1rem;
 }
 
 ul{
   padding-left: 0;
-  margin-top: 10px;
+  margin-top: .625rem;
   max-height: 50vh; /* Set a fixed height for the category list */
   overflow-y: auto;
 }
 
 li {
   list-style: none;
-  margin-bottom: 10px;
+  margin-bottom: .625rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 10px;
+  padding: .5rem .625rem;
   background: #f9f9f9;
-  border-radius: 10px;
+  border-radius: .625rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 .submit-btn,
-.close-btn,
 .remove-btn {
-  margin-top: 10px;
-  padding: 10px;
-  background-color: #4CAF50;
+  margin-top: .625rem;
+  padding: .625rem;
   border: none;
   color: white;
-  border-radius: 25px;
+  border-radius: 1.563rem;
   cursor: pointer;
-  font-size: 14px;
+  font-size: .875rem;
   transition: background-color 0.3s ease;
 }
 
-.submit-btn:hover,
-.close-btn:hover {
-  background-color: #45a049;
+.submit-btn, .remove-btn {
+  margin-bottom: .625rem;
+  background-color: #274156;
+}
+
+.submit-btn:hover {
+  background-color: #5d7180;
 }
 
 .close-btn {
-  background-color: #a6a5a5;
-}
-
-.close-btn:hover {
-  background-color: #888;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: gray;
 }
 
 .remove-btn {
-  background-color: #f44336;
+  background-color: darkgray;
   margin-left: auto;
 }
 
@@ -222,18 +242,18 @@ li {
 
 ul {
   padding-left: 0;
-  margin-top: 10px;
+  margin-top: .625rem;
 }
 
 li {
   list-style: none;
-  margin-bottom: 10px;
+  margin-bottom: .625rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 10px;
+  padding: .5rem .625rem;
   background: #f9f9f9;
-  border-radius: 10px;
+  border-radius: .625rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -245,7 +265,7 @@ li {
 
 .category-item span {
   flex-grow: 1;
-  font-size: 16px;
-  padding-right: 10px;
+  font-size: 1rem;
+  padding-right: .625rem;
 }
 </style>

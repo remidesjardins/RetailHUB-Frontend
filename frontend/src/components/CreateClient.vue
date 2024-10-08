@@ -210,64 +210,64 @@ export default {
 
 .overlay-content {
   background-color: white;
-  padding: 20px;
-  border-radius: 10px;
-  width: 450px;
+  padding: 1.25rem;
+  border-radius: 1.5rem;
+  width: 28.125rem;
   position: relative;
 }
 
 .close-button {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: .625rem;
+  right: .625rem;
   background-color: transparent;
   border: none;
-  font-size: 24px;
+  font-size: 1.5rem;
   cursor: pointer;
+  color: grey;
 }
 
 h1 {
-  font-size: 24px;
-  margin-bottom: 20px;
+  font-size: 1.5rem;
+  margin-bottom: 1.25rem;
   text-align: center;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  margin-bottom: 20px;
+  gap: .938rem;
+  margin-bottom: 1.25rem;
 }
 
 input, textarea {
   width: 100%;
-  padding: 10px;
+  padding: .625rem;
   border: 2px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
+  border-radius: 1.5rem;
+  font-size: 1rem;
 }
 
 .create-client-button {
   width: 100%;
-  padding: 10px;
-  background-color: #a9c7c5;
+  padding: .625rem;
+  background-color: #80cbc4;
   border: none;
-  border-radius: 5px;
-  font-size: 16px;
+  border-radius: 1.5rem;
+  font-size: 1rem;
   cursor: pointer;
   color: white;
-  font-weight: bold;
 }
 
 .create-client-button:hover {
-  background-color: #88b3b1;
+  background-color: #5d8f8d;
 }
 
 /* Style for address input fields */
 .form-group-address {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: .625rem;
 }
 
 input {
@@ -278,4 +278,5 @@ input {
 .full-width {
   grid-column: span 2;
 }
+
 </style>

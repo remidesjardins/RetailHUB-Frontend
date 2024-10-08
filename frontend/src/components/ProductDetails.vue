@@ -255,6 +255,11 @@ export default {
 </script>
 
 <style scoped>
+
+h1 {
+  margin-bottom: 1rem;
+}
+
 /* Overlay Styles */
 .overlay {
   display: flex;
@@ -269,15 +274,13 @@ export default {
   z-index: 999;  /* Ensure it's on top */
 }
 
-
-
 .product-details {
   background-color: white;
-  border-radius: 30px; /* Rounded corners */
-  padding: 20px;
-  max-width: 900px;
+  border-radius: 1.875rem; /* Rounded corners */
+  padding: 1.25rem;
+  max-width: 56.25rem;
   max-height: 90vh;
-  width: 900px;
+  width: 56.25rem;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   display: flex;
   justify-content: space-between;
@@ -295,79 +298,81 @@ export default {
 }
 
 .left-content img {
-  width: 150px;
-  margin-bottom: 10px;
+  width: 9.375rem;
+  margin-bottom: .625rem;
 }
 
 .left-content .product-title {
   text-align: left;
-  font-size: 25px;
+  font-size: 1.563rem;
   font-weight: bold;
 }
 
 .price {
-  font-size: 24px;
-  margin-bottom: 10px;
+  font-size: 1.5rem;
+  margin-bottom: .625rem;
 }
 
 .add-to-cart {
   width: 100%;
-  padding: 15px;
+  padding: .938rem;
   border: none;
-  border-radius: 25px;
+  border-radius: 1.563rem;
   background-color: #d3d3d3;
   color: black;
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: bold;
   cursor: pointer;
-  margin-top: 10px;
+  margin-top: .625rem;
 }
 
 .summary {
   width: 55%;
-  padding-left: 30px;
+  position: sticky !important;
+  top: 10%;
 }
 
 .summary h3 {
-  margin-bottom: 10px;
+  margin-bottom: .625rem;
 }
 
 .close-button {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 1.25rem;
+  right: 1.25rem;
   cursor: pointer;
 }
 
 .category-label {
   background-color: orange;
-  border-radius: 10px;
-  padding: 5px 10px;
-  margin-bottom: 20px;
+  border-radius: .625rem;
+  padding: .313rem .625rem;
+  margin-bottom: 1.25rem;
   color: white;
   font-weight: bold;
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 .stock-info {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
 }
 
 .stock-level {
   display: flex;
   align-items: center;
+  margin-top: 0.5rem;
 }
 
 .stock-number {
   background-color: green;
   border-radius: 50%;
-  padding: 10px;
+  padding: .625rem;
   color: white;
   font-weight: bold;
-  margin-right: 10px;
+  margin-right: .625rem;
 }
 
 .stock-location {
@@ -376,17 +381,17 @@ export default {
 
 .bottom-right-buttons {
   position: absolute;
-  bottom: 20px;
-  right: 20px;
+  bottom: 1.25rem;
+  right: 1.25rem;
   display: flex;
-  gap: 10px;
+  gap: 1.5rem;
 }
 
 .icon-button {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 38px;
+  font-size: 2rem;
   color: #007bff;
 }
 
@@ -404,20 +409,20 @@ export default {
 
 .add-to-cart {
   width: 100%;
-  padding: 15px;
+  padding: .938rem;
   border: none;
-  border-radius: 25px;
-  background-color: #007bff; /* Custom blue for the add-to-cart button */
+  border-radius: 1.563rem;
+  background-color: #80cbc4; /* Custom blue for the add-to-cart button */
   color: white;
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: bold;
   cursor: pointer;
-  margin-top: 10px;
+  margin-top: .625rem;
   transition: background-color 0.3s ease;
 }
 
 .add-to-cart:hover {
-  background-color: #0056b3; /* Darker blue on hover */
+  background-color: #5d8f8d; /* Darker blue on hover */
 }
 
 /* Quantity buttons container */
@@ -428,20 +433,20 @@ export default {
 }
 
 .cart-btn {
-  padding: 10px 15px;
-  background-color: #007bff;
+  padding: .625rem .938rem;
+  background-color: #f0f0f0;
   border: none;
   color: white;
-  font-size: 16px;
+  font-size: 1rem;
   cursor: pointer;
   border-radius: 50%;
-  margin: 5px;
+  margin: .313rem;
   transition: all 0.2s ease;
   animation: bounce 0.3s; /* Add bounce animation */
 }
 
 .cart-btn:hover {
-  background-color: #0056b3;
+  background-color: darkgray;
 }
 
 /* Keyframes for bounce animation */
@@ -461,8 +466,8 @@ export default {
 }
 
 .quantity-number {
-  font-size: 18px;
-  margin: 0 15px;
+  font-size: 1.125rem;
+  margin: 0 .938rem;
 }
 
 </style>

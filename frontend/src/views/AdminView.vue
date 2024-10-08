@@ -147,7 +147,7 @@ export default {
   width: 80vw;
   height: 80vh;
   background-color: white;
-  border-radius: 10px;
+  border-radius: .625rem;
 }
 
 .content-container {
@@ -155,25 +155,25 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 10px;
-  margin-left: 60px;
+  padding: .625rem;
+  margin-left: 3.75rem;
   position: relative;
 }
 
 .chart-container {
   /* Container for the chart components */
-  margin-left: 65px;
-  width: calc(100% - 65px);
-  padding-top: 20px;
+  margin-left: 4.063rem;
+  width: calc(100% - 4.063rem);
+  padding-top: 1.25rem;
 }
 
 /* Sticky Top Bar for Period Selection Buttons */
 .top-bar {
   display: flex;
   justify-content: center;
-  padding: 10px 0;
+  padding: .625rem 0;
   background-color: white;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -181,13 +181,13 @@ export default {
 
 /* Styles for Period Selection Buttons */
 .top-bar button {
-  padding: 12px 24px;
+  padding: .75rem 1.5rem;
   border: none;
-  border-radius: 30px;
-  background-color: #f0f0f0;
+  border-radius: 1.875rem;
+  background-color: white;
   cursor: pointer;
-  margin: 0 10px;
-  font-size: 16px;
+  margin: 0 .625rem;
+  font-size: 1rem;
   color: #333;
   transition: background-color 0.3s ease;
 }
@@ -201,10 +201,10 @@ export default {
 /* Styles for the Back Button */
 .back-button {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: .625rem;
+  left: .625rem;
   cursor: pointer;
-  font-size: 20px;
+  font-size: 1.25rem;
 }
 
 /* Styles for the Chart Container */
@@ -220,20 +220,13 @@ export default {
 .chart-wrapper {
   width: 90%;
   height: 70vh; /* Takes 70% of the view height */
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 15px;
+  background-color: white;
+  padding: 1.25rem;
+  border-radius: .938rem;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Styles for the Footer Buttons (Commented Out) */
-.footer-buttons {
-  display: flex;
-  justify-content: center;
-  padding: 10px;
-}
-
 .footer-buttons button {
-  margin: 0 5px;
+  margin: 0 .313rem;
 }
 </style>

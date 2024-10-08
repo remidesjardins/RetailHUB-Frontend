@@ -47,11 +47,11 @@ export default {
           action: this.notifyFunction,
         }, // Notification icon
         {
-          icon: 'fa-solid fa-cart-shopping',
+          icon: "fa-solid fa-house",
           action: this.cartFunction,
         }, // Cart icon
         {
-          icon: 'fa-solid fa-inbox',
+          icon: "fa-solid fa-file-invoice-dollar",
           action: this.inboxFunction,
         }, // Inbox icon
         {
@@ -98,28 +98,29 @@ export default {
   position: fixed; /* Rendre la sidebar fixe sur le côté gauche */
   top: 0;
   left: 0;
-  width: 60px;
+  width: 3.75rem;
   height: 100vh; /* Utiliser 100vh pour la hauteur complète de l'écran */
-  background-color: #f0f0f0;
+  background-color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-around;
-  padding: 20px 0;
+  padding: 1.25rem 0;
   overflow: hidden; /* Évite tout débordement */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .menu-item {
-  padding: 20px 0;
+  padding: 1.25rem 0;
 }
 
 .menu-item i {
-  font-size: 24px;
+  font-size: 1.5rem;
   color: #000;
   cursor: pointer;
 }
 
 .menu-item i:hover {
-  color: #4CAF50; /* Changement de couleur au survol */
+  color: #274156; /* Changement de couleur au survol */
 }
 </style>

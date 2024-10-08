@@ -65,18 +65,21 @@ export default {
 
 
 <style scoped>
+
 .search-bar {
   flex-grow: 1;
-  margin: 0 20px;
+  margin: 0 1.25rem;
 }
+
 .search-bar input {
-  width: 90%;
-  padding: 10px;
-  font-size: 16px;
+  width: 100%;
+  padding: .625rem;
+  font-size: 1rem;
   border: 2px solid black;
-  border-radius: 30px;
+  border-radius: 1.875rem;
   background: white;
 }
+
 .search-bar input::placeholder {
   color: black;
 }

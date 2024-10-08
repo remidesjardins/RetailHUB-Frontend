@@ -387,66 +387,75 @@ export default {
 </script>
 
 <style scoped>
+
+h2 {
+  padding-bottom: 1rem !important;
+}
+
+.invoice-list {
+  padding: 1rem;
+  margin: 0 1rem 1rem 1rem;
+}
+
 .invoice-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 1.5rem;
   justify-content: flex-start;
-  padding-bottom: 10px;
 }
 
 .invoice-card {
-  min-width: 200px;
-  max-width: 200px;
-  height: 200px;
-  padding: 10px;
-  border-radius: 20px;
-  background: linear-gradient(to bottom right, #aac4f6, #c2d7f4);
+  min-width: 13rem;
+  max-width: 13rem;
+  height: 13rem;
+  padding: .625rem;
+  border-radius: 1.25rem;
+  background: #d0e7eb;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   position: relative; /* Make the card relative to position the buttons */
 }
 
 .customer-name {
   font-weight: bold;
-  font-size: 28px;
-  margin-bottom: 10px;
-  margin-left: 10px;
+  font-size: 1.75rem;
+  margin-bottom: .625rem;
+  margin-left: .5rem;
 }
 
 .total-price {
-  font-size: 24px;
-  margin-left: 10px;
+  font-size: 1.5rem;
+  margin-left: .625rem;
 }
 
 .sale-reference {
-  font-size: 18px;
-  color: #333;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  margin-left: 10px;
+  font-size: 1.125rem;
+  color: grey;
+  margin-top: .625rem;
+  margin-bottom: .625rem;
+  margin-left: .625rem;
 }
 
 /* Action buttons (Update and Delete) */
 .card-actions {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
+  bottom: .625rem;
+  right: .625rem;
   display: flex;
-  gap: 10px;
+  gap: .625rem;
 }
 
 .action-btn {
   background: none;
   border: none;
-  font-size: 20px;
+  font-size: 1.25rem;
   cursor: pointer;
-  padding: 5px;
+  padding: .313rem;
   border-radius: 50%;
   transition: background-color 0.3s;
 }
 
 .update-btn {
-  color: #4caf50; /* Green color for update */
+  color: black; /* Green color for update */
 }
 
 .delete-btn {
@@ -458,17 +467,15 @@ export default {
 }
 
 .nothing-found {
-  font-size: 18px;
+  font-size: 1.125rem;
   color: red;
   text-align: center;
-  margin-top: 40px;
+  margin-top: 2.5rem;
+  font-weight: bold;
 }
 
 .invoice-btn {
   color: #3b5998; /* Blue color for generating invoice */
 }
 
-.invoice-btn:hover {
-  background-color: rgba(0, 0, 255, 0.1); /* Hover effect */
-}
 </style>

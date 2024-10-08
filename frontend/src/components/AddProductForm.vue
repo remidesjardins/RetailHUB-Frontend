@@ -374,8 +374,9 @@ export default {
 </script>
 
 <style scoped>
+
 h2 {
-  margin-top: 0;
+  margin-bottom: 1rem;
 }
 
 .overlay {
@@ -462,15 +463,19 @@ h2 {
 .submit-btn {
   padding: .625rem 1.25rem;
   margin-top: 1rem;
-  background-color: #a6a5a5;
-  color: black;
+  background-color: #80cbc4;
+  color: white;
   border: none;
   border-radius: 1.563rem;
   cursor: pointer;
   font-size: 1rem;
 }
+
+.submit-btn:hover {
+  background-color: #5d8f8d;
+}
+
 .category-label{
-  margin-top: .938rem;
   font-weight: bold;
   display: block;
   margin-bottom: .313rem;
@@ -498,8 +503,8 @@ h2 {
 .category-btn {
   padding: .625rem .938rem;
   margin-left: .625rem;
-  background-color: #a6a5a5;
-  color: black;
+  background-color: #274156;
+  color: white;
   border: none;
   border-radius: 1.563rem;
   cursor: pointer;
@@ -508,7 +513,7 @@ h2 {
 }
 
 .category-btn:hover {
-  background-color: #aac4f6;
+  background-color: #5d7180;
 }
 
 </style>

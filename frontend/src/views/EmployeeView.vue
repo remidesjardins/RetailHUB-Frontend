@@ -162,51 +162,60 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: 1.25rem;
 }
 
 .dashboard-container {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  max-width: 800px;
-  margin-bottom: 20px;
+  max-width: 50rem;
+  margin: 0 0 1.25rem 2rem;
 }
 
 .stats-card {
   background-color: #e0f7fa;
-  border-radius: 10px;
-  padding: 20px;
+  border-radius: 1.5rem;
+  padding: 1.25rem;
   text-align: center;
   flex: 1;
-  margin: 10px;
+  margin: .625rem;
 }
 
 .value {
   color: green;
-  font-size: 40px;
+  font-size: 2.5rem;
   font-weight: bold;
+  margin-top: 1rem;
 }
 
 .button-container {
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 1.25rem;
 }
 
 .stats-button,
 .logout-button {
   background-color: #80cbc4;
   border: none;
-  border-radius: 10px;
-  padding: 10px 20px;
-  font-size: 16px;
+  border-radius: 1.5rem;
+  padding: .625rem 1.25rem;
+  font-size: 1rem;
   cursor: pointer;
   color: white;
 }
 
+.stats-button:hover {
+  background-color: #5d8f8d;
+}
+
 .logout-button {
-  background-color: #607d8b;
+  background-color: #cb8087;
+}
+
+.logout-button:hover {
+  background-color: #8f5d5f;
 }
 
 .stats-button:hover,

@@ -41,23 +41,29 @@
                 <img :src="product.product.Image" alt="Product image" />
 
                 <div class="item-details">
-                  <div class="details-left">
-                    <!-- Product Name -->
-                    <h3>{{ product.product.name }}</h3>
-                    <!-- Product SKU -->
-                    <p>{{ product.product.SKU }}</p>
+                  <div class="items">
+                    <div class="details-left">
+                      <!-- Product Name -->
+                      <h3>{{ product.product.name }}</h3>
+                      <!-- Product SKU -->
+                      <p>{{ product.product.SKU }}</p>
+                    </div>
+
+                    <!-- Quantity Selector -->
+                    <div class="quantity-selector">
+                      <button @click="decreaseQuantity(index, product)">-</button>
+                      <span>{{ product.quantity }}</span>
+                      <button @click="increaseQuantity(index, product)">+</button>
+
+                    </div>
+                    <span>
+                      <!-- Total Price for the Product -->
+                    $ {{ (product.product.price * product.quantity).toFixed(2) }}
+                    </span>
+
                   </div>
 
-                  <!-- Quantity Selector -->
-                  <div class="quantity-selector">
-                    <button @click="decreaseQuantity(index, product)">-</button>
-                    <span>{{ product.quantity }}</span>
-                    <button @click="increaseQuantity(index, product)">+</button>
-                  </div>
-
-                  <!-- Total Price for the Product -->
                   <span>
-                    {{ (product.product.price * product.quantity).toFixed(2) }} $
                     <!-- Trash Icon to Remove Product from Cart -->
                     <i class="fa-solid fa-trash" @click="deleteProductFromCart(product)"></i>
                   </span>
@@ -593,6 +599,10 @@ html, body, #app {
   width: 100%;
 }
 
+h2 {
+  margin-bottom: 1rem;
+}
+
 /* Container for the home view */
 .home-container {
   display: flex;
@@ -600,18 +610,11 @@ html, body, #app {
   width: 100vw;  /* Full viewport width */
 }
 
-/* Navigation Bar styling */
-.navbar {
-  width: 60px; /* Fixed width for the navigation bar */
-  background-color: #f0f0f0;
-  height: 100%; /* Occupies full height */
-}
-
 /* Content area styling */
 .content {
   flex-grow: 1; /* Takes up remaining space next to the navbar */
   background-color: white; /* Explicit white background */
-  padding: 20px;
+  padding: 1.25rem 0;
   display: flex;
   justify-content: flex-start; /* Align content to the top */
   align-items: flex-start;
@@ -633,20 +636,23 @@ html, body, #app {
   justify-content: space-between;
   width: 100%; /* Occupies full available width */
   height: 100%; /* Occupies full available height */
-  max-width: 1200px; /* Limits maximum width to keep it centered */
+  max-width: 75rem; /* Limits maximum width to keep it centered */
 }
 
 /* Shopping Bag styling */
 .bag {
   width: 60%;
+  height: 94%;
   background-color: #d0e7eb;
-  padding: 20px;
-  border-radius: 15px;
+  padding: 1.25rem;
+  border-radius: .938rem;
   display: flex;
   flex-direction: column;
   justify-content: flex-start; /* Distributes items vertically */
   overflow-x: auto; /* Allows horizontal scrolling */
   white-space: nowrap; /* Prevents line breaks for child elements */
+  position: absolute;
+  left: 4rem;
 }
 
 /* Individual Cart Item styling */
@@ -654,30 +660,43 @@ html, body, #app {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px;
-  margin-bottom: 20px;
-  border-radius: 25px;
+  padding: .938rem;
+  border-radius: 1.563rem;
   background-color: transparent; /* No background */
 }
 
 /* Product Image styling */
 .cart-item img {
-  width: auto;
-  height: 97px;
-  border-radius: 15px; /* Slightly rounded corners for the image */
-  margin-right: 20px; /* Adds space between image and details */
+  width: 6rem;
+  height: auto;
+  border-radius: .938rem; /* Slightly rounded corners for the image */
+  margin-right: 1.25rem; /* Adds space between image and details */
 }
 
 /* Item Details container */
 .item-details {
   flex-grow: 1;
-  padding: 15px;
+  padding: .938rem;
   display: flex;
-  justify-content: space-between; /* Space between left details and price */
+  justify-content: space-between;
   align-items: center;
   background-color: white; /* White background for details */
-  border-radius: 25px;
-  margin-right: 20px; /* Space between details and options */
+  border-radius: 1.563rem;
+  margin-right: 1.25rem; /* Space between details and options */
+  max-width: 28rem;
+  min-width: 28rem;
+  position: relative;
+  right: 0.5rem;
+}
+
+.items {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.items span {
+  font-weight: bold;
 }
 
 /* Left side of Item Details (Name and SKU) */
@@ -686,46 +705,56 @@ html, body, #app {
   flex-direction: column;
   justify-content: space-between;
   flex-grow: 1;
+  max-width: 11rem;
+  min-width: 11rem;
 }
 
 /* Quantity Selector styling */
 .quantity-selector {
   display: flex;
   align-items: center;
-  margin: 0 20px;
+  margin: 0 1.25rem;
 }
 
 /* Quantity Selector buttons styling */
 .quantity-selector button {
   background-color: #f0f0f0;
   border: none;
-  padding: 5px 10px;
-  font-size: 16px;
+  padding: .313rem .625rem;
+  font-size: 1rem;
   cursor: pointer;
+}
+
+.quantity-selector button:hover {
+  background-color: gray;
 }
 
 /* Quantity display styling */
 .quantity-selector span {
-  margin: 0 10px;
-  font-size: 16px;
+  margin: 0 .625rem;
+  font-size: 1rem;
 }
 
 /* Product Name styling */
 .item-details h3 {
-  font-size: 20px;
+  font-size: 1.25rem;
   margin: 0;
   font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 11rem;
 }
 
 /* Product SKU styling */
 .item-details p {
-  font-size: 14px;
+  font-size: .875rem;
   color: gray;
 }
 
 /* Product Total Price styling */
 .item-details span {
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: bold;
   color: black;
   text-align: right; /* Aligns price to the right */
@@ -748,29 +777,32 @@ html, body, #app {
 
 /* General Button styling */
 button {
-  background-color: #007bff;
+  background-color: #274156;
   color: white;
-  padding: 12px;
+  padding: .75rem;
   border: none;
   cursor: pointer;
-  border-radius: 25px;
-  font-size: 16px;
+  border-radius: 1.563rem;
+  font-size: 1rem;
 }
 
 /* Button hover effect */
 button:hover {
-  background-color: #0056b3;
+  background-color: #5d7180;
 }
 
 /* Summary Section styling */
 .summary {
-  width: 30%;
-  padding: 20px;
-  background-color: #b4d4db;
-  border-radius: 15px;
+  width: 32%;
+  height: 94%;
+  padding: 1.25rem;
+  background-color: #d0e7eb;
+  border-radius: .938rem;
   display: flex;
   flex-direction: column;
-  overflow: scroll;
   justify-content: space-between; /* Ensures elements are well-spaced within the summary */
+  position: absolute;
+  right: .5rem;
 }
+
 </style>

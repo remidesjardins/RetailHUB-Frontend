@@ -330,10 +330,15 @@ export default {
 </script>
 
 <style scoped>
+
+h2 {
+  margin-bottom: 1rem;
+}
+
 .modify-product-form {
   background: white;
-  padding: 20px;
-  border-radius: 30px;
+  padding: 1.25rem;
+  border-radius: 1.875rem;
   width: 50%;  /* Adjust as per your preference */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  /* Add some shadow */
   position: relative;
@@ -349,7 +354,7 @@ export default {
 .close-btn {
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 1.5rem;
   cursor: pointer;
   color: gray;
 }
@@ -357,12 +362,12 @@ export default {
 .form-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 15px;
+  margin-bottom: .938rem;
 }
 
 .form-group {
   flex: 1;
-  margin-right: 15px;
+  margin-right: .938rem;
 }
 
 .form-group:last-child {
@@ -371,56 +376,51 @@ export default {
 
 .form-group label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: .313rem;
+  margin-top: 0;
   font-weight: bold;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
-  width: 95%;
-  padding: 10px;
+  width: 100%;
+  padding: .625rem;
   border: 1px solid black;
-  border-radius: 25px;
-  font-size: 16px;
+  border-radius: 1.563rem;
+  font-size: 1rem;
 }
 
 .form-group textarea {
+  width: 102.5%;
+  margin-right: 0;
   resize: vertical;
 }
 
-.category-row {
-  display: flex;
-  align-items: center;
-}
-
-.add-category-btn {
-  margin-left: 20px;
-  padding: 5px 10px;
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  cursor: pointer;
+.form-group select {
+  width: 79%;
 }
 
 .submit-btn {
-  padding: 10px 20px;
-  background-color: #a6a5a5;
+  padding: .625rem 1.25rem;
+  margin: 0.6rem 0 0 0;
+  background-color: #80cbc4;
   color: white;
   border: none;
-  border-radius: 25px;
+  border-radius: 1.563rem;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 .submit-btn:hover {
-  background-color: #45a049;
+  background-color: #5d8f8d;
 }
 
 .category-label{
-  margin-top: 15px;
+  margin-top: .938rem;
   font-weight: bold;
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: .313rem;
 }
 
 .category-wrapper {
@@ -430,31 +430,31 @@ export default {
 
 .category-select {
   width: 70%;
-  padding: 10px;
-  font-size: 16px;
-  border-radius: 25px;
+  padding: .625rem;
+  font-size: 1rem;
+  border-radius: 1.563rem;
   border: 1px solid black;
   background-color: white;
   appearance: none;
   background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><polygon fill="%23666" points="0,5 10,15 20,5"/></svg>');
   background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 15px;
+  background-position: right .625rem center;
+  background-size: .938rem;
 }
 
 .category-btn {
-  padding: 10px 15px;
-  margin-left: 10px;
-  background-color: #a6a5a5;
-  color: black;
+  padding: .625rem .938rem;
+  margin-left:.625rem;
+  background-color: #274156;
+  color: white;
   border: none;
-  border-radius: 25px;
+  border-radius: 1.563rem;
   cursor: pointer;
-  font-size: 14px;
+  font-size: .875rem;
   transition: background-color 0.3s ease;
 }
 
 .category-btn:hover {
-  background-color: #aac4f6;
+  background-color: #5d7180;
 }
 </style>

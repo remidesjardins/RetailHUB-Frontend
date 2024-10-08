@@ -232,6 +232,11 @@ export default {
 </script>
 
 <style scoped>
+
+h3 {
+  margin-bottom: 1rem;
+}
+
 .overlay-container {
   position: fixed;
   top: 0;
@@ -248,62 +253,58 @@ export default {
 .overlay {
   background: white;
   width: 80%;
-  max-width: 900px;
-  height: 90%;
-  border-radius: 15px;
+  max-width: 56.25rem;
+  height: 80%;
+  border-radius: .938rem;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   overflow-y: auto;
-  padding: 20px;
+  padding: 1.25rem;
   position: relative;
 }
 
 .close-button {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: .625rem;
+  right: .625rem;
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 1.5rem;
   cursor: pointer;
-  color: #333;
+  color: grey;
   transition: color 0.3s ease;
-}
-
-.close-button:hover {
-  color: #f44336;
 }
 
 .main-content {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding: 20px;
+  padding: 1.25rem;
 }
 
 .search-form {
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: .938rem;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: .313rem;
   font-weight: bold;
 }
 
 .custom-input {
   width: 100%;
-  padding: 10px;
+  padding: .625rem;
   border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
+  border-radius: 1.5rem;
+  font-size: 1rem;
 }
 
 .separator {
-  margin: 10px 0;
+  margin: .625rem 0;
   text-align: center;
   font-weight: bold;
 }
@@ -311,31 +312,32 @@ export default {
 .submit-btn {
   background-color: #80cbc4;
   color: white;
-  padding: 10px 20px;
+  padding: .625rem 1.25rem;
   border: none;
-  border-radius: 5px;
+  border-radius: 1.5rem;
   cursor: pointer;
 }
 
-.submit-btn:hover {
-  background-color: #4caf50;
+.submit-btn:hover,
+.create-client-btn:hover {
+  background-color: #5d8f8d;
 }
 
 .clients-list {
   background-color: #e0f7fa;
-  padding: 20px;
-  border-radius: 15px;
-  margin-top: 20px;
+  padding: 1.25rem;
+  border-radius: 1.5rem;
+  margin-top: 1.25rem;
 }
 
 .client-card {
   display: flex;
   justify-content: space-between;
-  padding: 15px;
+  padding: .938rem;
   background-color: white;
-  border-radius: 10px;
+  border-radius: 1.5rem;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  margin-bottom: 10px;
+  margin-bottom: .625rem;
   cursor: pointer;
   transition: box-shadow 0.3s ease;
 }
@@ -347,20 +349,16 @@ export default {
 .create-client-btn {
   background-color: #80cbc4;
   border: none;
-  padding: 12px 24px;
-  border-radius: 25px;
+  padding: .75rem 1.5rem;
+  border-radius: 1.5rem;
   color: white;
   cursor: pointer;
-  margin-top: 20px;
-}
-
-.create-client-btn:hover {
-  background-color: #4caf50;
+  margin-top: 1.25rem;
 }
 
 .client-info,
 .client-contact {
   flex: 1;
-  padding: 10px;
+  padding: .625rem;
 }
 </style>

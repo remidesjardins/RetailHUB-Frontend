@@ -150,26 +150,30 @@ export default {
 </script>
 
 <<style scoped>
+
+h2 {
+  margin: 1.5rem 0 0.5rem 0;
+}
+
 .command-list {
   display: flex;
-  gap: 16px;
+  gap: 1rem;
   justify-content: start;
-  overflow-x: auto;
 }
 
 .command-box {
-  min-width: 200px;
-  max-width: 200px;
-  height: 200px;
-  padding: 10px;
-  border-radius: 20px;
-  background: linear-gradient(to bottom right, #e0eafc, #cfdef3);
+  min-width: 12rem;
+  max-width: 12rem;
+  height: 11rem;
+  padding: .625rem;
+  border-radius: 1.25rem;
+  background: #d0e7eb;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: left;
   display: flex;
-  font-size: 32px;
+  font-size: 2rem;
   font-weight: bold;
-  color: #333;
+  color: black;
   cursor: pointer;
   transition: transform 0.2s ease-in-out;
 }
@@ -177,4 +181,5 @@ export default {
 .command-box:hover {
   transform: scale(1.05); /* Slightly enlarges on hover */
 }
+
 </style>

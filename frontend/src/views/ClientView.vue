@@ -248,26 +248,20 @@ export default {
 </script>
 
 <style scoped>
-.top-section {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background-color: white;
-  padding-bottom: 10px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow to distinguish it */
-}
+
 .top-bar {
   display: flex;
   justify-content: center; /* Center the buttons horizontally */
-  position: absolute;
-  border-radius: 30px;
-  background-color: #fafafa;
+  border-radius: 1.5rem;
+  width: 14rem;
+  background-color: white;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 5px 3px;
-  top: 20px;
-  left: 50%;
+  padding: .625rem 0;
+  position: relative;
+  top: 0;
+  left: 47%;
   transform: translateX(-50%);
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
   z-index: 100;
 }
 
@@ -280,30 +274,29 @@ export default {
 }
 
 .invoice-container {
-  padding: 20px;
+  padding: 0 1.25rem 1.25rem 1.25rem;
   display: flex;
   flex-direction: column;
-  margin-left: 60px;
+  margin-left: 3.75rem;
 }
 
 .client-header {
   display: flex;
   justify-content: space-between;
-  padding: 10px;
-  background-color: #e6f0ff;
-  border-radius: 10px;
-  margin-bottom: 20px;
+  padding: .625rem;
+  background-color: white;
+  box-shadow: 0 8px 8px rgba(0, 0, 0, 0.1);
+  border-radius: .625rem;
 }
 
 .client-info {
-  font-size: 16px;
+  font-size: 1rem;
 }
 
-.card-button {
-  background-color: #d9b3b3;
-  border: none;
-  border-radius: 15px;
-  padding: 5px 10px;
+.client-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
 .contact-info {
@@ -317,44 +310,20 @@ export default {
 }
 
 .recent-invoice-section {
-  margin-top: 20px;
-}
-
-.invoice-list {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.invoice-card {
-  min-width: 150px;
-  padding: 15px;
-  background-color: #aac4f6;
-  border-radius: 10px;
-  text-align: center;
-  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.top-bar {
-  display: flex;
-  justify-content: center;
-  padding: 10px 0;
-  background-color: white;
+  margin-top: 1.25rem;
 }
 
 .top-bar button {
-  padding: 12px 24px;
+  padding: .75rem 1.5rem;
   border: none;
-  border-radius: 30px;
+  border-radius: 1.875rem;
   background-color: #f0f0f0;
   cursor: pointer;
-  margin: 0 10px;
-  font-size: 16px;
+  margin: 0 .625rem;
+  font-size: 1rem;
   color: #333;
   transition: background-color 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-.top-bar button.active {
-  background-color: #80cbc4;
-}
 </style>

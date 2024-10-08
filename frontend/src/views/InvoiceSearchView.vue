@@ -189,28 +189,34 @@ export default {
   top: 0;
   z-index: 10;
   background-color: white;
-  padding-bottom: 10px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow to distinguish it */
+  padding-bottom: .625rem;
+  padding-right: .625rem;
 }
 
 /* Toggle buttons container */
 .top-bar {
   display: flex;
   justify-content: center;
-  padding: 10px 0;
+  padding: .625rem 0;
   background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 14rem;
+  position: relative;
+  left: 35%;
+  border-radius: 1.5rem;
 }
 
 .top-bar button {
-  padding: 12px 24px;
+  padding: .75rem 1.5rem;
   border: none;
-  border-radius: 30px;
+  border-radius: 1.875rem;
   background-color: #f0f0f0;
   cursor: pointer;
-  margin: 0 10px;
-  font-size: 16px;
+  margin: 0 .625rem;
+  font-size: 1rem;
   color: #333;
   transition: background-color 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 .top-bar button.active {
@@ -219,29 +225,22 @@ export default {
 
 /* Header inside top-section */
 #header {
-  padding: 10px 0;
+  padding: .625rem 0;
   background-color: white;
 }
 
 /* Scrollable Recent Sales Section */
 .recent-sales {
-  margin-top: 10px;
+  margin-top: .625rem;
   flex-grow: 1;
   overflow-y: auto;
   max-height: 75%; /* Adjust the height as needed */
-  padding-right: 20px; /* Add some padding for better scrollability */
+  padding-right: 1.25rem; /* Add some padding for better scrollability */
 }
 
 .invoice-search {
-  margin-left: 65px;
-  width: calc(100% - 65px);
-}
-
-.invoice-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: flex-start;
+  margin-left: 4.063rem;
+  width: calc(100% - 4.063rem);
 }
 
 </style>

@@ -170,6 +170,11 @@ export default {
 </script>
 
 <style scoped>
+
+h2 {
+  margin-bottom: 1rem;
+}
+
 .overlay {
   position: fixed;
   top: 0;
@@ -185,9 +190,9 @@ export default {
 
 .receipt-parcel-form {
   background-color: white;
-  padding: 20px;
-  border-radius: 10px;
-  width: 400px;
+  padding: 1.25rem;
+  border-radius: 1.875rem;
+  width: 25rem;
 }
 
 .form-header {
@@ -199,36 +204,42 @@ export default {
 .close-btn {
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 1.5rem;
   cursor: pointer;
   color: gray;
 }
 
 .form-row {
-  margin-bottom: 15px;
+  margin-bottom: .938rem;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: .313rem;
   font-weight: bold;
 }
 
 .form-group input {
   width: 100%;
-  padding: 10px;
+  padding: .625rem;
   border: 1px solid black;
-  border-radius: 25px;
-  font-size: 16px;
+  border-radius: 1.563rem;
+  font-size: 1rem;
 }
 
 .submit-btn {
-  padding: 10px 20px;
-  background-color: #a6a5a5;
+  padding: .625rem 1.25rem;
+  background-color: #80cbc4;
   color: white;
   border: none;
-  border-radius: 25px;
+  border-radius: 1.563rem;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 1rem;
+  margin-top: 0.5rem;
 }
+
+.submit-btn:hover {
+  background-color: #5d8f8d;
+}
+
 </style>

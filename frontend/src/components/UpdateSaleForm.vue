@@ -14,7 +14,12 @@
 <template>
   <div v-if="show" class="overlay">
     <div class="overlay-content">
-      <h2>Update Sale</h2>
+      <div class="form-header">
+        <h2>Update Sale</h2>
+        <button @click="closeOverlay" class="close-btn">
+          <i class="fa-solid fa-xmark fa-xl"></i>
+        </button>
+      </div>
 
       <!-- Form to update sale details -->
       <form @submit.prevent="updateSale">
@@ -66,7 +71,6 @@
         <!-- Submit and Close Buttons -->
         <div class="button-group">
           <button type="submit" class="submit-btn">Update Sale</button>
-          <button type="button" class="close-btn" @click="closeOverlay">Close</button>
         </div>
       </form>
     </div>
@@ -178,6 +182,11 @@ export default {
 </script>
 
 <style scoped>
+
+h2 {
+  margin-bottom: 1rem;
+}
+
 /* Overlay styling */
 .overlay {
   position: fixed;
@@ -194,21 +203,35 @@ export default {
 
 .overlay-content {
   background: white;
-  padding: 25px;
-  border-radius: 20px;
-  width: 450px;
+  padding: 1.563rem;
+  border-radius: 1.25rem;
+  width: 28.125rem;
   max-width: 90%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: gray;
+}
+
 /* Form group styling */
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: .5rem;
   font-weight: bold;
   color: #333;
 }
@@ -220,24 +243,24 @@ export default {
 }
 
 .customer-name {
-  font-size: 16px;
-  margin-right: 10px;
+  font-size: 1rem;
+  margin-right: .625rem;
 }
 
 /* Modify Customer Button */
 .modify-client-btn {
-  padding: 8px 15px;
-  background-color: #007bff;
+  padding: .5rem .938rem;
+  background-color: #274156;
   border: none;
   color: white;
-  border-radius: 20px;
+  border-radius: 1.25rem;
   cursor: pointer;
-  font-size: 14px;
+  font-size: .875rem;
   transition: background-color 0.3s ease;
 }
 
 .modify-client-btn:hover {
-  background-color: #0056b3;
+  background-color: #5d7180;
 }
 
 /* Input fields styling */
@@ -245,10 +268,10 @@ input[type="text"],
 input[type="number"],
 select {
   width: 100%;
-  padding: 10px;
+  padding: .625rem;
   border: 1px solid #ccc;
-  border-radius: 25px;
-  font-size: 16px;
+  border-radius: 1.563rem;
+  font-size: 1rem;
 }
 
 /* Button styling */
@@ -257,27 +280,18 @@ select {
   justify-content: space-between;
 }
 
-.submit-btn,
-.close-btn {
-  padding: 10px 20px;
-  background-color: #4CAF50;
+.submit-btn {
+  padding: .625rem 1.25rem;
+  background-color: #80cbc4;
   border: none;
   color: white;
-  border-radius: 25px;
+  border-radius: 1.563rem;
   cursor: pointer;
-  font-size: 14px;
+  font-size: .875rem;
   transition: background-color 0.3s ease;
 }
 
-.close-btn {
-  background-color: #a6a5a5;
-}
-
-.close-btn:hover {
-  background-color: #888;
-}
-
 .submit-btn:hover {
-  background-color: #45a049;
+  background-color: #5d8f8d;
 }
 </style>

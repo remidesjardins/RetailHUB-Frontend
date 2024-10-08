@@ -38,11 +38,13 @@
               @click="selectProduct(product)"
           >
             <!-- Product Image with fallback to a placeholder if Image URL is not available -->
-            <img
-                :src="product.Image || getProductImage(product.SKU)"
-                alt="product image"
-                class="product-image"
-            />
+            <div class="image-container">
+              <img
+                  :src="product.Image || getProductImage(product.SKU)"
+                  alt="product image"
+                  class="product-image"
+              />
+            </div>
             <!-- Display the product's SKU -->
             <div class="product-id">{{ product.SKU }}</div>
             <!-- Container for product name and price -->
@@ -229,6 +231,7 @@ export default {
 </script>
 
 <style scoped>
+
 .product-list-container {
   display: flex;
   overflow-x: auto; /* Enable native horizontal scrolling */
@@ -238,83 +241,86 @@ export default {
 .product-slider {
   display: flex; /* Align the products horizontally */
   flex-wrap: nowrap; /* Prevent wrapping of products */
-  gap: 10px; /* Add some space between products */
+  gap: .625rem; /* Add some space between products */
 }
 
 .product {
-  min-width: 200px;
-  max-width: 200px;
-  height: 200px;
-  padding: 10px;
-  border-radius: 20px;
-  background: linear-gradient(to bottom right, #aac4f6, #c2d7f4);
+  min-width: 12rem;
+  max-width: 12rem;
+  height: 11rem;
+  padding: .625rem;
+  border-radius: 1.25rem;
+  background: #d0e7eb;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
   position: relative;
-  margin: 10px;
+  margin: .625rem;
   display: flex;
   flex-direction: column;
   flex: 0 0 auto; /* Ensure each product is a fixed size */
-  justify-content: space-between;
   transition: transform 0.2s ease-in-out;
   scroll-snap-align: center; /* Optional: make the product snap to center when scrolling */
-
+  cursor: pointer;
 }
 
 .product:hover {
   transform: scale(1.05);
 }
 
-.product-image {
+.image-container {
   width: auto;
-  height: auto;
-  max-width: 70%;
+  height: 9rem;
+}
+
+.product-image {
+  object-fit: contain;
+  max-width: 100%;
   border-radius: 15%;
   max-height: 60%;
-  margin: 20px auto;
+  margin: 1.25rem auto;
 }
 
 .product-id {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 14px;
+  top: .625rem;
+  right: .625rem;
+  font-size: .875rem;
   font-weight: bold;
   color: #333;
 }
 
 .product-details {
   position: absolute;
-  left: 10px;
-  bottom: 20px;
+  left: .625rem;
+  bottom: 0.5rem;
   text-align: left;
 }
 
 .product-name {
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: bold;
+  width: 11rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .product-price {
-  font-size: 18px;
+  font-size: 1.125rem;
   color: #000;
 }
-
-
 
 button {
   background-color: transparent;
   border: none;
-  font-size: 24px;
+  font-size: 1.5rem;
   cursor: pointer;
-}
-
-button .right{
   position: absolute;
-  right: 20px;
+  right: 1.25rem;
 }
 
 button:focus {
   outline: none;
 }
+
 </style>
