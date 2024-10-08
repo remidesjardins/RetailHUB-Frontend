@@ -16,7 +16,7 @@
         type="text"
         :value="searchQuery"
         @input="emitSearch($event.target.value)"
-        placeholder="Search for a book..."
+        placeholder="Search..."
     />
   </div>
 </template>
