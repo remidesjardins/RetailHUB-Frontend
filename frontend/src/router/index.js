@@ -6,6 +6,7 @@ import ClientSearchView from "@/views/ClientSearchView.vue";
 import ClientView from "@/views/ClientView.vue";
 import InvoiceSearchView from "@/views/InvoiceSearchView.vue";
 import EmployeeView from "@/views/EmployeeView.vue";
+import OverlayRestockAlert from "@/views/OverlayRestockAlert.vue";
 
 const routes = [
     {
@@ -48,6 +49,11 @@ const routes = [
         path: '/invoicesearch',
         name: 'InvoiceSearch',
         component: InvoiceSearchView,
+    },
+    {
+        path: '/alert',
+        name: 'Alert',
+        component: OverlayRestockAlert,
     },
 ]
 
