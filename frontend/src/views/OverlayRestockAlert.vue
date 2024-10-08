@@ -12,38 +12,23 @@
 -->
 
 <template>
-  <!-- Main container for the Restock Alert section -->
   <div class="home-container">
-    <!-- Navigation Bar component -->
     <NavBar class="navbar"></NavBar>
 
-    <!-- Overlay for displaying restock alerts -->
-    <div class="overlay-restock-alert">
-      <div class="overlay-content">
-        <!-- Header with title and close button -->
-        <h1>Restock Alert</h1>
-        <button @click="$emit('close')" class="close-btn">
-          <i class="fa-solid fa-xmark fa-xl"></i>
-        </button>
-
-        <!-- Loop through each restock alert to display its details -->
+    <!-- Restock Alerts Container -->
+    <div class="restocks-container">
+      <h2>Restock Alerts</h2>
+      <div class="alert-list">
         <div
             v-for="(alert, index) in restockAlerts.slice()"
             :key="index"
             class="alerts"
         >
-          <!-- Display product name and SKU -->
-          <div class="alert-product">
-            <h3>{{ alert.ref_product }}</h3>
+          <div class="alert-content">
+            <h3 class="alert-product">{{ alert.ref_product }}</h3> <!-- Reference on top -->
+            <p class="alert-details">{{ alert.reason }}</p> <!-- Reason below reference, aligned left -->
           </div>
-
-          <!-- Display reason for restocking -->
-          <div class="alert-details">
-            <p>{{ alert.reason }}</p>
-          </div>
-
-          <!-- Button to mark the alert as resolved/deleted -->
-          <i class="fa-solid fa-check" @click="deleteAlert(alert._id)"></i>
+          <i class="fa-solid fa-check check-icon" @click="deleteAlert(alert._id)"></i> <!-- Check icon to the right -->
         </div>
       </div>
     </div>
@@ -153,7 +138,125 @@ export default {
 </script>
 
 <style scoped>
-.overlay-restock-alert {
-  margin-left: 60px;
+.restocks-container {
+  margin-left: 4%;
+  max-width: 80%;
+  padding: 2rem;
+  background-color: #d0e7eb;
+  border-radius: 1rem;
+  position: relative;
+  height: calc(100vh - 4rem);
+  overflow-y: auto;
+}
+
+.restocks-container h2 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.05rem;
+}
+
+.alert-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.alerts {
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 2rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.alerts:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.alert-product {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+}
+
+.alert-details {
+  font-size: 1.1rem;
+  color: #666;
+  margin-top: 0.5rem;
+  line-height: 1.5;
+}
+
+.check-icon {
+  font-size: 2rem;
+  color: #28a745;
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.check-icon:hover {
+  transform: scale(1.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+@media only screen and (max-width: 768px) {
+  .restocks-container {
+    margin-left: 12%;
+    max-width: 75%;
+    padding: 1.5rem;
+  }
+
+  .alerts {
+    padding: 1.2rem;
+  }
+
+  .check-icon {
+    font-size: 1.6rem;
+  }
+
+  .alert-product {
+    font-size: 1.3rem;
+  }
+
+  .alert-details {
+    font-size: 1rem;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  .restocks-container {
+    margin-left: 12%;
+    max-width: 70%;
+    padding: 1rem;
+    height: calc(100vh - 4rem);
+  }
+
+  .alerts {
+    padding: 1rem;
+  }
+
+  .check-icon {
+    font-size: 1.5rem;
+  }
+
+  .alert-product {
+    font-size: 1.1rem;
+  }
+
+  .alert-details {
+    font-size: 0.9rem;
+  }
 }
 </style>
