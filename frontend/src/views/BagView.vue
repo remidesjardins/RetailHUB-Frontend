@@ -685,12 +685,6 @@ h2 {
   right: 0.5rem;
 }
 
-.items {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-}
-
 .items span {
   font-weight: bold;
 }
@@ -745,7 +739,7 @@ h2 {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  width: 12rem;
+  width: 20rem;
 }
 
 /* Product SKU styling */
